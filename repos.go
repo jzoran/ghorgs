@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-const ReposGql = "config/repos.gql"
-const ReposNextGql = "config/repos_next.gql"
+const ReposGql = "config/repos.json"
+const ReposNextGql = "config/repos_next.json"
 const ReposCsv = "repos.csv"
 
 type Repository struct {
