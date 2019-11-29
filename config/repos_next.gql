@@ -1,0 +1,1 @@
+{ "query": "query { organization ( login: \"SonyMobile\" ) { repositories ( first: %d, after: \"%s\" ) { pageInfo { hasNextPage endCursor } nodes { id name url diskUsage updatedAt pushedAt } totalCount } } }" }

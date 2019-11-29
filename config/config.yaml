@@ -1,0 +1,4 @@
+url: "https://api.github.com/graphql"
+token: ""
+per_page: 6
+time_out: 10
