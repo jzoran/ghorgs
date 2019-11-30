@@ -3,13 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"time"
 )
 
-const ReposGql = "config/repos.json"
-const ReposNextGql = "config/repos_next.json"
+const ReposGraphQlJson = "config/repos.json"
+const ReposNextGraphQlJson = "config/repos_next.json"
 const ReposCsv = "repos.csv"
 
 type Repository struct {
@@ -45,29 +44,15 @@ type ReposResponse struct {
 }
 
 type ReposQuery struct {
-	Count int
-	Query string
+	Query
 }
 
 func makeReposQuery(count int) ReposQuery {
-	if count == 0 {
-		count = githubConfig.PerPage
-	}
-
-	bytes, err := ioutil.ReadFile(ReposGql)
-	if err != nil {
-		panic(err)
-	}
-	return ReposQuery{count, fmt.Sprintf(string(bytes), count)}
+	return ReposQuery{makeQuery(ReposGraphQlJson, count)}
 }
 
-func (r *ReposQuery) getNext(after string) {
-	bytes, err := ioutil.ReadFile(ReposNextGql)
-	if err != nil {
-		panic(err)
-	}
-
-	r.Query = fmt.Sprintf(string(bytes), r.Count, after)
+func (q *ReposQuery) getNext(after string) {
+	q.Query.getNext(ReposNextGraphQlJson, after)
 }
 
 func (r *ReposResponse) fromJsonBuffer(buff []byte) {

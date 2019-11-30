@@ -1,0 +1,1 @@
+{ "query": "query { organization ( login:\"SonyMobile\" ) { membersWithRole ( first:%d ) { pageInfo { hasNextPage endCursor } edges { hasTwoFactorEnabled role node { id login name email company url bio status { message } updatedAt } } totalCount } } }" }

@@ -1,0 +1,28 @@
+query ($offset:Int!) {
+  organization ( login:"SonyMobile" ) {
+    membersWithRole ( first:%d ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+	hasTwoFactorEnabled
+        node {
+          id
+          login
+          name
+          isSiteAdmin
+          email
+          company
+          url
+          bio
+          status {
+            message
+          }
+          updatedAt
+        }
+      }
+      totalCount
+    }
+  }
+}

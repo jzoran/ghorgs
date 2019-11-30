@@ -40,10 +40,10 @@ func main() {
 
 	var req = makeReposQuery(0)
 	if debug.Verbose {
-		log.Print(req.Query)
+		log.Print(req.GraphQlQueryJson)
 	}
 
-	gitHubRequest := makeGitHubRequest(req.Query, args.Token)
+	gitHubRequest := makeGitHubRequest(req.GraphQlQueryJson, args.Token)
 	resp := gitHubRequest.fetch()
 
 	var dat ReposResponse
@@ -64,9 +64,9 @@ func main() {
 	for dat.Data.Org.Repos.PageInfo.HasNext {
 		req.getNext(dat.Data.Org.Repos.PageInfo.End)
 		if debug.Verbose {
-			log.Print(req.Query)
+			log.Print(req.GraphQlQueryJson)
 		}
-		gitHubRequest = makeGitHubRequest(req.Query, args.Token)
+		gitHubRequest = makeGitHubRequest(req.GraphQlQueryJson, args.Token)
 		resp = gitHubRequest.fetch()
 
 		dat.fromJsonBuffer(resp)
@@ -79,6 +79,51 @@ func main() {
 				fmt.Printf("\rrepos: %d/%d", counter, dat.Data.Org.Repos.Total)
 			} else {
 				fmt.Printf("\rrepos: %d/%d", dat.Data.Org.Repos.Total, dat.Data.Org.Repos.Total)
+			}
+		}
+	}
+
+	var ureq = makeUsersQuery(0)
+	if debug.Verbose {
+		log.Print(ureq.GraphQlQueryJson)
+	}
+
+	gitHubRequest = makeGitHubRequest(ureq.GraphQlQueryJson, args.Token)
+	resp = gitHubRequest.fetch()
+
+	var udat UsersResponse
+	udat.fromJsonBuffer(resp)
+	udat.appendCsv()
+
+	counter = ureq.Count
+	if debug.Verbose {
+		log.Print(udat.toString())
+	} else {
+		if counter <= udat.Data.Org.Members.Total {
+			fmt.Printf("\nusers: %d/%d", counter, udat.Data.Org.Members.Total)
+		} else {
+			fmt.Printf("\nusers: %d/%d", udat.Data.Org.Members.Total, udat.Data.Org.Members.Total)
+		}
+	}
+
+	for udat.Data.Org.Members.PageInfo.HasNext {
+		ureq.getNext(udat.Data.Org.Members.PageInfo.End)
+		if debug.Verbose {
+			log.Print(ureq.GraphQlQueryJson)
+		}
+		gitHubRequest = makeGitHubRequest(ureq.GraphQlQueryJson, args.Token)
+		resp = gitHubRequest.fetch()
+
+		udat.fromJsonBuffer(resp)
+		udat.appendCsv()
+		if debug.Verbose {
+			log.Print(udat.toString())
+		} else {
+			counter += ureq.Count
+			if counter <= udat.Data.Org.Members.Total {
+				fmt.Printf("\rusers: %d/%d", counter, udat.Data.Org.Members.Total)
+			} else {
+				fmt.Printf("\rusers: %d/%d", udat.Data.Org.Members.Total, udat.Data.Org.Members.Total)
 			}
 		}
 	}
