@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 )
 
@@ -48,8 +49,16 @@ func main() {
 	var dat ReposResponse
 	dat.fromJsonBuffer(resp)
 	dat.appendCsv()
+
+	counter := req.Count
 	if debug.Verbose {
 		log.Print(dat.toString())
+	} else {
+		if counter <= dat.Data.Org.Repos.Total {
+			fmt.Printf("repos: %d/%d", counter, dat.Data.Org.Repos.Total)
+		} else {
+			fmt.Printf("repos: %d/%d", dat.Data.Org.Repos.Total, dat.Data.Org.Repos.Total)
+		}
 	}
 
 	for dat.Data.Org.Repos.PageInfo.HasNext {
@@ -64,6 +73,13 @@ func main() {
 		dat.appendCsv()
 		if debug.Verbose {
 			log.Print(dat.toString())
+		} else {
+			counter += req.Count
+			if counter <= dat.Data.Org.Repos.Total {
+				fmt.Printf("\rrepos: %d/%d", counter, dat.Data.Org.Repos.Total)
+			} else {
+				fmt.Printf("\rrepos: %d/%d", dat.Data.Org.Repos.Total, dat.Data.Org.Repos.Total)
+			}
 		}
 	}
 }
