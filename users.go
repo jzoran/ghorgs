@@ -16,15 +16,15 @@ type UserStatus struct {
 }
 
 type User struct {
-	Id        string     `json:"id"`
-	Login     string     `json:"login"`
-	Name      string     `json:"name"`
-	Email     string     `json:"email"`
-	Company   string     `json:"company"`
-	Url       string     `json:"url"`
-	Bio       string     `json:"bio"`
-	Status    UserStatus `json:"status"`
-	UpdatedAt time.Time  `json:"updatedAt"`
+	Id        string      `json:"id"`
+	Login     string      `json:"login"`
+	Name      *string     `json:"name",omitempty`
+	Email     *string     `json:"email",omitempty`
+	Company   *string     `json:"company",omitempty`
+	Url       string      `json:"url"`
+	Bio       *string     `json:"bio",omitempty`
+	Status    *UserStatus `json:"status",omitempty`
+	UpdatedAt time.Time   `json:"updatedAt"`
 }
 
 type OrgMember struct {
@@ -103,17 +103,40 @@ func (r *UsersResponse) appendCsv() {
 		panic(err)
 	}
 	for _, user := range r.Data.Org.Members.Nodes {
+		name := ""
+		if user.Member.Name != nil {
+			name = *user.Member.Name
+		}
+		email := ""
+		if user.Member.Email != nil {
+			email = *user.Member.Email
+		}
+		company := ""
+		if user.Member.Company != nil {
+			company = *user.Member.Company
+		}
+
+		bio := ""
+		if user.Member.Bio != nil {
+			bio = *user.Member.Bio
+		}
+
+		msg := ""
+		if user.Member.Status != nil {
+			msg = user.Member.Status.Message
+		}
+
 		s := fmt.Sprintf("%s\t%s\t%s\t%s\t%t\t%s\t%s\t%s\t%s\t%s\t%s\n",
 			user.Member.Id,
 			user.Member.Login,
-			user.Member.Name,
+			name,
 			user.Role,
 			user.Has2FA,
-			user.Member.Email,
-			user.Member.Company,
+			email,
+			company,
 			user.Member.Url,
-			user.Member.Bio,
-			user.Member.Status.Message,
+			bio,
+			msg,
 			user.Member.UpdatedAt)
 		if _, err := f.WriteString(s); err != nil {
 			panic(err)
