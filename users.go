@@ -15,6 +15,15 @@ type UserStatus struct {
 	Message string `json:"message"`
 }
 
+type UserRepoNames struct {
+	Name string `json:"nameWithOwner"`
+}
+
+type UserRepos struct {
+	TotalCount int             `json:"totalCount"`
+	ReposList  []UserRepoNames `json:"nodes"`
+}
+
 type User struct {
 	Id        string      `json:"id"`
 	Login     string      `json:"login"`
@@ -25,6 +34,7 @@ type User struct {
 	Bio       *string     `json:"bio",omitempty`
 	Status    *UserStatus `json:"status",omitempty`
 	UpdatedAt time.Time   `json:"updatedAt"`
+	Repos     UserRepos   `json:"repositoriesContributedTo"`
 }
 
 type OrgMember struct {
@@ -96,7 +106,7 @@ func (r *UsersResponse) appendCsv() {
 			panic(err)
 		}
 		defer f.Close()
-		if _, err := f.WriteString("Id\tLogin\tName\tAdmin\t2FA\tEmail\tCompany\tUrl\tBio\tStatus\tUpdated\n"); err != nil {
+		if _, err := f.WriteString("Id\tLogin\tName\tAdmin\t2FA\tEmail\tCompany\tUrl\tBio\tStatus\tUpdated\tRepositories Contributed To\n"); err != nil {
 			panic(err)
 		}
 	} else {
@@ -126,7 +136,18 @@ func (r *UsersResponse) appendCsv() {
 			msg = user.Member.Status.Message
 		}
 
-		s := fmt.Sprintf("%s\t%s\t%s\t%s\t%t\t%s\t%s\t%s\t%s\t%s\t%s\n",
+		repos := ""
+		if user.Member.Repos.TotalCount > 0 {
+			for i, repo := range user.Member.Repos.ReposList {
+				if i == 0 {
+					repos = repo.Name
+				} else {
+					repos = repos + ", " + repo.Name
+				}
+			}
+		}
+
+		s := fmt.Sprintf("%s\t%s\t%s\t%s\t%t\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
 			user.Member.Id,
 			user.Member.Login,
 			name,
@@ -137,7 +158,8 @@ func (r *UsersResponse) appendCsv() {
 			user.Member.Url,
 			bio,
 			msg,
-			user.Member.UpdatedAt)
+			user.Member.UpdatedAt,
+			repos)
 		if _, err := f.WriteString(s); err != nil {
 			panic(err)
 		}

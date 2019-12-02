@@ -20,6 +20,12 @@ query ($offset:Int!) {
             message
           }
           updatedAt
+          repositoriesContributedTo (first: 20, orderBy: {field: NAME, direction: ASC}) {
+            totalCount
+            nodes {
+              nameWithOwner
+            }
+          }
         }
       }
       totalCount
