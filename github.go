@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 )
 
 type Args struct {
@@ -30,6 +31,7 @@ func init() {
 		"    - read:gpg_key")
 	flag.Parse()
 	debug.Verbose = args.Verbose
+	log.SetOutput(os.Stdout)
 }
 
 func main() {
