@@ -47,8 +47,8 @@ type ReposQuery struct {
 	Query
 }
 
-func makeReposQuery(count int) ReposQuery {
-	return ReposQuery{makeQuery(ReposGraphQlJson, count)}
+func makeReposQuery(organization string) ReposQuery {
+	return ReposQuery{makeQuery(ReposGraphQlJson, organization)}
 }
 
 func (q *ReposQuery) getNext(after string) {

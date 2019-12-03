@@ -8,9 +8,10 @@ import (
 )
 
 type Args struct {
-	Help    bool
-	Verbose bool
-	Token   string
+	Help         bool
+	Verbose      bool
+	Token        string
+	Organization string
 }
 
 var args Args
@@ -29,6 +30,7 @@ func init() {
 		"    - read:org,\n"+
 		"    - read:public_key,\n"+
 		"    - read:gpg_key")
+	flag.StringVar(&args.Organization, "o", "", "Organizational account being analyzed.")
 	flag.Parse()
 	debug.Verbose = args.Verbose
 	log.SetOutput(os.Stdout)
@@ -40,7 +42,7 @@ func main() {
 		return
 	}
 
-	var req = makeReposQuery(0)
+	var req = makeReposQuery(args.Organization)
 	if debug.Verbose {
 		log.Print(req.GraphQlQueryJson)
 	}
@@ -85,7 +87,7 @@ func main() {
 		}
 	}
 
-	var ureq = makeUsersQuery(0)
+	var ureq = makeUsersQuery(args.Organization)
 	if debug.Verbose {
 		log.Print(ureq.GraphQlQueryJson)
 	}

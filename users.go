@@ -65,8 +65,8 @@ type UsersQuery struct {
 	Query
 }
 
-func makeUsersQuery(count int) UsersQuery {
-	return UsersQuery{makeQuery(UsersGraphQlJson, count)}
+func makeUsersQuery(organization string) UsersQuery {
+	return UsersQuery{makeQuery(UsersGraphQlJson, organization)}
 }
 
 func (q *UsersQuery) getNext(after string) {

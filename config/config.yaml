@@ -1,4 +1,5 @@
 url: "https://api.github.com/graphql"
 token: ""
+organization: "SonyMobile"
 per_page: 6
 time_out: 10

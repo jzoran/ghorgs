@@ -8,10 +8,11 @@ import (
 )
 
 type GitHubConfig struct {
-	Url     string `yaml:"url"`
-	Token   string `yaml:"token"`
-	PerPage int    `yaml:"per_page"`
-	TimeOut int    `yaml:"time_out"`
+	Url          string `yaml:"url"`
+	Token        string `yaml:"token"`
+	Organization string `yaml:"organization"`
+	PerPage      int    `yaml:"per_page"`
+	TimeOut      int    `yaml:"time_out"`
 }
 
 var githubConfig GitHubConfig

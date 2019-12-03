@@ -1,1 +1,1 @@
-{ "query": "query { organization ( login: \"SonyMobile\" ) { repositories ( first: %d ) { pageInfo { hasNextPage endCursor } nodes { id name url diskUsage updatedAt pushedAt } totalCount } } }" }
+{ "query": "query { organization ( login: \"%s\" ) { repositories ( first: %d ) { pageInfo { hasNextPage endCursor } nodes { id name url diskUsage updatedAt pushedAt } totalCount } } }" }

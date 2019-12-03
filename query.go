@@ -6,20 +6,25 @@ import (
 )
 
 type Query struct {
+	Organization     string
 	Count            int
 	GraphQlQueryJson string
 }
 
-func makeQuery(jsonFile string, count int) Query {
-	if count == 0 {
-		count = githubConfig.PerPage
+func makeQuery(jsonFile string, organization string) Query {
+	if organization == "" {
+		organization = githubConfig.Organization
+	}
+
+	if githubConfig.Organization == "" {
+		panic("Missing GitHub Organization.")
 	}
 
 	bytes, err := ioutil.ReadFile(jsonFile)
 	if err != nil {
 		panic(err)
 	}
-	return Query{count, fmt.Sprintf(string(bytes), count)}
+	return Query{organization, githubConfig.PerPage, fmt.Sprintf(string(bytes), organization, githubConfig.PerPage)}
 }
 
 func (q *Query) getNext(jsonFile string, after string) {
@@ -28,5 +33,5 @@ func (q *Query) getNext(jsonFile string, after string) {
 		panic(err)
 	}
 
-	q.GraphQlQueryJson = fmt.Sprintf(string(bytes), q.Count, after)
+	q.GraphQlQueryJson = fmt.Sprintf(string(bytes), q.Organization, q.Count, after)
 }
