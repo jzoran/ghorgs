@@ -6,13 +6,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"time"
 )
 
 const ReposGraphQlJson = "config/repos.json"
 const ReposNextGraphQlJson = "config/repos_next.json"
 const ReposCsv = "repos.csv"
+
+var ReposCsvTitle = []string{"Id", "Name", "Url", "DiskUsage (kB)", "Updated", "Last Push"}
 
 type Repository struct {
 	Id        string    `json:"id"`
@@ -74,39 +75,18 @@ func (r *ReposResponse) toString() string {
 	return string(s)
 }
 
-func (r *ReposResponse) appendCsv() {
-	var f *os.File
-
-	if _, err := os.Stat(ReposCsv); err == nil {
-		f, err = os.OpenFile(ReposCsv,
-			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			panic(err)
-		}
-		defer f.Close()
-	} else if os.IsNotExist(err) {
-		f, err = os.OpenFile(ReposCsv,
-			os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			panic(err)
-		}
-		defer f.Close()
-		if _, err := f.WriteString("Id\tName\tUrl\tDiskUsage (kB)\tUpdated\tLast Push\n"); err != nil {
-			panic(err)
-		}
-	} else {
-		panic(err)
+func (r *ReposResponse) appendCsv(c Csv) {
+	if c.Records == nil {
+		c.Records = make(map[string][]string)
+		c.Keys = make([]string, 0)
 	}
+
 	for _, repo := range r.Data.Org.Repos.Nodes {
-		s := fmt.Sprintf("%s\t%s\t%s\t%d\t%s\t%s\n",
-			repo.Id,
-			repo.Name,
+		c.addKey(repo.Id)
+		c.Records[repo.Id] = []string{repo.Name,
 			repo.Url,
-			repo.DiskUsage,
-			repo.UpdatedAt,
-			repo.PushedAt)
-		if _, err := f.WriteString(s); err != nil {
-			panic(err)
-		}
+			fmt.Sprintf("%d", repo.DiskUsage),
+			fmt.Sprintf("%s", repo.UpdatedAt),
+			fmt.Sprintf("%s", repo.PushedAt)}
 	}
 }

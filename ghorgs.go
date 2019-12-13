@@ -45,6 +45,7 @@ func main() {
 		return
 	}
 
+	reposCsv := makeCsv(ReposCsv)
 	req := makeReposQuery(args.Organization)
 	if debug.Verbose {
 		log.Print(req.GraphQlQueryJson)
@@ -55,7 +56,7 @@ func main() {
 
 	var repos ReposResponse
 	repos.fromJsonBuffer(resp)
-	repos.appendCsv()
+	repos.appendCsv(reposCsv)
 
 	counter := req.Count
 	if debug.Verbose {
@@ -77,7 +78,7 @@ func main() {
 		resp = gitHubRequest.fetch()
 
 		repos.fromJsonBuffer(resp)
-		repos.appendCsv()
+		repos.appendCsv(reposCsv)
 		if debug.Verbose {
 			log.Print(repos.toString())
 		} else {
@@ -89,7 +90,9 @@ func main() {
 			}
 		}
 	}
+	reposCsv.flush(ReposCsvTitle)
 
+	usersCsv := makeCsv(UsersCsv)
 	ureq := makeUsersQuery(args.Organization)
 	if debug.Verbose {
 		log.Print(ureq.GraphQlQueryJson)
@@ -100,7 +103,7 @@ func main() {
 
 	var users UsersResponse
 	users.fromJsonBuffer(resp)
-	users.appendCsv()
+	users.appendCsv(usersCsv)
 
 	counter = ureq.Count
 	if debug.Verbose {
@@ -122,7 +125,7 @@ func main() {
 		resp = gitHubRequest.fetch()
 
 		users.fromJsonBuffer(resp)
-		users.appendCsv()
+		users.appendCsv(usersCsv)
 		if debug.Verbose {
 			log.Print(users.toString())
 		} else {
@@ -133,5 +136,6 @@ func main() {
 				fmt.Printf("\rusers: %d/%d", users.Data.Org.Members.Total, users.Data.Org.Members.Total)
 			}
 		}
+		usersCsv.flush(UsersCsvTitle)
 	}
 }

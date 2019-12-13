@@ -6,13 +6,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"time"
 )
 
 const UsersGraphQlJson = "config/users.json"
 const UsersNextGraphQlJson = "config/users_next.json"
 const UsersCsv = "users.csv"
+
+var UsersCsvTitle = []string{"Id", "Login", "Name", "Admin", "2FA", "Email", "Company", " Url", "Bio", "Status", "Updated", "Repositories Contributed To"}
 
 type UserStatus struct {
 	Message string `json:"message"`
@@ -92,28 +93,10 @@ func (r *UsersResponse) toString() string {
 	return string(s)
 }
 
-func (r *UsersResponse) appendCsv() {
-	var f *os.File
-
-	if _, err := os.Stat(UsersCsv); err == nil {
-		f, err = os.OpenFile(UsersCsv,
-			os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			panic(err)
-		}
-		defer f.Close()
-	} else if os.IsNotExist(err) {
-		f, err = os.OpenFile(UsersCsv,
-			os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			panic(err)
-		}
-		defer f.Close()
-		if _, err := f.WriteString("Id\tLogin\tName\tAdmin\t2FA\tEmail\tCompany\tUrl\tBio\tStatus\tUpdated\tRepositories Contributed To\n"); err != nil {
-			panic(err)
-		}
-	} else {
-		panic(err)
+func (r *UsersResponse) appendCsv(c Csv) {
+	if c.Records == nil {
+		c.Records = make(map[string][]string)
+		c.Keys = make([]string, 0)
 	}
 
 	for _, user := range r.Data.Org.Members.Nodes {
@@ -148,21 +131,17 @@ func (r *UsersResponse) appendCsv() {
 			}
 		}
 
-		s := fmt.Sprintf("%s\t%s\t%s\t%s\t%t\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
-			user.Member.Id,
-			user.Member.Login,
+		c.addKey(user.Member.Id)
+		c.Records[user.Member.Id] = []string{user.Member.Login,
 			name,
 			user.Role,
-			user.Has2FA,
+			fmt.Sprintf("%t", user.Has2FA),
 			email,
 			company,
 			user.Member.Url,
 			bio,
 			msg,
-			user.Member.UpdatedAt,
-			repos)
-		if _, err := f.WriteString(s); err != nil {
-			panic(err)
-		}
+			fmt.Sprintf("%s", user.Member.UpdatedAt),
+			repos}
 	}
 }
