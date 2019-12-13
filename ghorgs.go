@@ -45,7 +45,7 @@ func main() {
 		return
 	}
 
-	var req = makeReposQuery(args.Organization)
+	req := makeReposQuery(args.Organization)
 	if debug.Verbose {
 		log.Print(req.GraphQlQueryJson)
 	}
@@ -53,44 +53,44 @@ func main() {
 	gitHubRequest := makeGitHubRequest(req.GraphQlQueryJson, args.Token)
 	resp := gitHubRequest.fetch()
 
-	var dat ReposResponse
-	dat.fromJsonBuffer(resp)
-	dat.appendCsv()
+	var repos ReposResponse
+	repos.fromJsonBuffer(resp)
+	repos.appendCsv()
 
 	counter := req.Count
 	if debug.Verbose {
-		log.Print(dat.toString())
+		log.Print(repos.toString())
 	} else {
-		if counter <= dat.Data.Org.Repos.Total {
-			fmt.Printf("repos: %d/%d", counter, dat.Data.Org.Repos.Total)
+		if counter <= repos.Data.Org.Repos.Total {
+			fmt.Printf("repos: %d/%d", counter, repos.Data.Org.Repos.Total)
 		} else {
-			fmt.Printf("repos: %d/%d", dat.Data.Org.Repos.Total, dat.Data.Org.Repos.Total)
+			fmt.Printf("repos: %d/%d", repos.Data.Org.Repos.Total, repos.Data.Org.Repos.Total)
 		}
 	}
 
-	for dat.Data.Org.Repos.PageInfo.HasNext {
-		req.getNext(dat.Data.Org.Repos.PageInfo.End)
+	for repos.Data.Org.Repos.PageInfo.HasNext {
+		req.getNext(repos.Data.Org.Repos.PageInfo.End)
 		if debug.Verbose {
 			log.Print(req.GraphQlQueryJson)
 		}
 		gitHubRequest = makeGitHubRequest(req.GraphQlQueryJson, args.Token)
 		resp = gitHubRequest.fetch()
 
-		dat.fromJsonBuffer(resp)
-		dat.appendCsv()
+		repos.fromJsonBuffer(resp)
+		repos.appendCsv()
 		if debug.Verbose {
-			log.Print(dat.toString())
+			log.Print(repos.toString())
 		} else {
 			counter += req.Count
-			if counter <= dat.Data.Org.Repos.Total {
-				fmt.Printf("\rrepos: %d/%d", counter, dat.Data.Org.Repos.Total)
+			if counter <= repos.Data.Org.Repos.Total {
+				fmt.Printf("\rrepos: %d/%d", counter, repos.Data.Org.Repos.Total)
 			} else {
-				fmt.Printf("\rrepos: %d/%d", dat.Data.Org.Repos.Total, dat.Data.Org.Repos.Total)
+				fmt.Printf("\rrepos: %d/%d", repos.Data.Org.Repos.Total, repos.Data.Org.Repos.Total)
 			}
 		}
 	}
 
-	var ureq = makeUsersQuery(args.Organization)
+	ureq := makeUsersQuery(args.Organization)
 	if debug.Verbose {
 		log.Print(ureq.GraphQlQueryJson)
 	}
@@ -98,39 +98,39 @@ func main() {
 	gitHubRequest = makeGitHubRequest(ureq.GraphQlQueryJson, args.Token)
 	resp = gitHubRequest.fetch()
 
-	var udat UsersResponse
-	udat.fromJsonBuffer(resp)
-	udat.appendCsv()
+	var users UsersResponse
+	users.fromJsonBuffer(resp)
+	users.appendCsv()
 
 	counter = ureq.Count
 	if debug.Verbose {
-		log.Print(udat.toString())
+		log.Print(users.toString())
 	} else {
-		if counter <= udat.Data.Org.Members.Total {
-			fmt.Printf("\nusers: %d/%d", counter, udat.Data.Org.Members.Total)
+		if counter <= users.Data.Org.Members.Total {
+			fmt.Printf("\nusers: %d/%d", counter, users.Data.Org.Members.Total)
 		} else {
-			fmt.Printf("\nusers: %d/%d", udat.Data.Org.Members.Total, udat.Data.Org.Members.Total)
+			fmt.Printf("\nusers: %d/%d", users.Data.Org.Members.Total, users.Data.Org.Members.Total)
 		}
 	}
 
-	for udat.Data.Org.Members.PageInfo.HasNext {
-		ureq.getNext(udat.Data.Org.Members.PageInfo.End)
+	for users.Data.Org.Members.PageInfo.HasNext {
+		ureq.getNext(users.Data.Org.Members.PageInfo.End)
 		if debug.Verbose {
 			log.Print(ureq.GraphQlQueryJson)
 		}
 		gitHubRequest = makeGitHubRequest(ureq.GraphQlQueryJson, args.Token)
 		resp = gitHubRequest.fetch()
 
-		udat.fromJsonBuffer(resp)
-		udat.appendCsv()
+		users.fromJsonBuffer(resp)
+		users.appendCsv()
 		if debug.Verbose {
-			log.Print(udat.toString())
+			log.Print(users.toString())
 		} else {
 			counter += ureq.Count
-			if counter <= udat.Data.Org.Members.Total {
-				fmt.Printf("\rusers: %d/%d", counter, udat.Data.Org.Members.Total)
+			if counter <= users.Data.Org.Members.Total {
+				fmt.Printf("\rusers: %d/%d", counter, users.Data.Org.Members.Total)
 			} else {
-				fmt.Printf("\rusers: %d/%d", udat.Data.Org.Members.Total, udat.Data.Org.Members.Total)
+				fmt.Printf("\rusers: %d/%d", users.Data.Org.Members.Total, users.Data.Org.Members.Total)
 			}
 		}
 	}
