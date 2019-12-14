@@ -98,17 +98,8 @@ func (c *Csv) log() {
 }
 
 func (c *Csv) existsKey(item string) bool {
-	if len(c.Keys) == 0 {
-		return false
-	}
-
-	for _, val := range c.Keys {
-		if item == val {
-			return true
-		}
-	}
-
-	return false
+	_, exists := c.Records[item]
+	return exists
 }
 
 func (c *Csv) addKey(key string) {
