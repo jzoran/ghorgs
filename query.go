@@ -14,6 +14,12 @@ type Query struct {
 	GraphQlQueryJson string
 }
 
+type IQuery interface {
+	getGraphQlJson() string
+	getNext(after string)
+	getCount() int
+}
+
 func makeQuery(jsonFile string, organization string) Query {
 	if organization == "" {
 		organization = githubConfig.Organization
@@ -27,7 +33,17 @@ func makeQuery(jsonFile string, organization string) Query {
 	if err != nil {
 		panic(err)
 	}
-	return Query{organization, githubConfig.PerPage, fmt.Sprintf(string(bytes), organization, githubConfig.PerPage)}
+	return Query{organization,
+		githubConfig.PerPage,
+		fmt.Sprintf(string(bytes), organization, githubConfig.PerPage)}
+}
+
+func (q *Query) getCount() int {
+	return q.Count
+}
+
+func (q *Query) getGraphQlJson() string {
+	return q.GraphQlQueryJson
 }
 
 func (q *Query) getNext(jsonFile string, after string) {

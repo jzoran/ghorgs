@@ -16,10 +16,10 @@ type Csv struct {
 	Keys     []string
 }
 
-func makeCsv(filename string) Csv {
+func makeCsv(filename string) *Csv {
 	f, err := os.Open(filename)
 	if err != nil {
-		return Csv{filename, nil, nil}
+		return &Csv{filename, nil, nil}
 	}
 	defer f.Close()
 
@@ -37,7 +37,7 @@ func makeCsv(filename string) Csv {
 		keys = append(keys, line[0])
 	}
 
-	return Csv{filename, records, keys}
+	return &Csv{filename, records, keys}
 }
 
 func (c *Csv) flush(title []string) {

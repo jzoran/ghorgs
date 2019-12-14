@@ -12,6 +12,7 @@ import (
 const UsersGraphQlJson = "config/users.json"
 const UsersNextGraphQlJson = "config/users_next.json"
 const UsersCsv = "users.csv"
+const UsersName = "users"
 
 var UsersCsvTitle = []string{"Id", "Login", "Name", "Admin", "2FA", "Email", "Company", " Url", "Bio", "Status", "Updated", "Repositories Contributed To"}
 
@@ -69,12 +70,28 @@ type UsersQuery struct {
 	Query
 }
 
-func makeUsersQuery(organization string) UsersQuery {
-	return UsersQuery{makeQuery(UsersGraphQlJson, organization)}
+func makeUsersQuery(organization string) *UsersQuery {
+	return &UsersQuery{makeQuery(UsersGraphQlJson, organization)}
+}
+
+func (q *UsersQuery) getCount() int {
+	return q.Query.Count
 }
 
 func (q *UsersQuery) getNext(after string) {
 	q.Query.getNext(UsersNextGraphQlJson, after)
+}
+
+func (r *UsersResponse) getName() string {
+	return UsersName
+}
+
+func (r *UsersResponse) makeCsv() *Csv {
+	return makeCsv(UsersCsv)
+}
+
+func (r *UsersResponse) makeQuery(org string) IQuery {
+	return makeUsersQuery(org)
 }
 
 func (r *UsersResponse) fromJsonBuffer(buff []byte) {
@@ -82,6 +99,18 @@ func (r *UsersResponse) fromJsonBuffer(buff []byte) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func (r *UsersResponse) getTotal() int {
+	return r.Data.Org.Members.Total
+}
+
+func (r *UsersResponse) hasNext() bool {
+	return r.Data.Org.Members.PageInfo.HasNext
+}
+
+func (r *UsersResponse) getAfter() string {
+	return r.Data.Org.Members.PageInfo.End
 }
 
 func (r *UsersResponse) toString() string {
@@ -93,7 +122,7 @@ func (r *UsersResponse) toString() string {
 	return string(s)
 }
 
-func (r *UsersResponse) appendCsv(c Csv) {
+func (r *UsersResponse) appendCsv(c *Csv) {
 	if c.Records == nil {
 		c.Records = make(map[string][]string)
 		c.Keys = make([]string, 0)
@@ -144,4 +173,8 @@ func (r *UsersResponse) appendCsv(c Csv) {
 			fmt.Sprintf("%s", user.Member.UpdatedAt),
 			repos}
 	}
+}
+
+func (r *UsersResponse) getCsvTitle() []string {
+	return UsersCsvTitle
 }

@@ -12,6 +12,7 @@ import (
 const ReposGraphQlJson = "config/repos.json"
 const ReposNextGraphQlJson = "config/repos_next.json"
 const ReposCsv = "repos.csv"
+const ReposName = "repos"
 
 var ReposCsvTitle = []string{"Id", "Name", "Url", "DiskUsage (kB)", "Updated", "Last Push"}
 
@@ -51,12 +52,28 @@ type ReposQuery struct {
 	Query
 }
 
-func makeReposQuery(organization string) ReposQuery {
-	return ReposQuery{makeQuery(ReposGraphQlJson, organization)}
+func makeReposQuery(organization string) *ReposQuery {
+	return &ReposQuery{makeQuery(ReposGraphQlJson, organization)}
+}
+
+func (q *ReposQuery) getCount() int {
+	return q.Query.Count
 }
 
 func (q *ReposQuery) getNext(after string) {
 	q.Query.getNext(ReposNextGraphQlJson, after)
+}
+
+func (r *ReposResponse) getName() string {
+	return ReposName
+}
+
+func (r *ReposResponse) makeCsv() *Csv {
+	return makeCsv(ReposCsv)
+}
+
+func (r *ReposResponse) makeQuery(org string) IQuery {
+	return makeReposQuery(org)
 }
 
 func (r *ReposResponse) fromJsonBuffer(buff []byte) {
@@ -64,6 +81,18 @@ func (r *ReposResponse) fromJsonBuffer(buff []byte) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func (r *ReposResponse) getTotal() int {
+	return r.Data.Org.Repos.Total
+}
+
+func (r *ReposResponse) hasNext() bool {
+	return r.Data.Org.Repos.PageInfo.HasNext
+}
+
+func (r *ReposResponse) getAfter() string {
+	return r.Data.Org.Repos.PageInfo.End
 }
 
 func (r *ReposResponse) toString() string {
@@ -75,7 +104,7 @@ func (r *ReposResponse) toString() string {
 	return string(s)
 }
 
-func (r *ReposResponse) appendCsv(c Csv) {
+func (r *ReposResponse) appendCsv(c *Csv) {
 	if c.Records == nil {
 		c.Records = make(map[string][]string)
 		c.Keys = make([]string, 0)
@@ -89,4 +118,8 @@ func (r *ReposResponse) appendCsv(c Csv) {
 			fmt.Sprintf("%s", repo.UpdatedAt),
 			fmt.Sprintf("%s", repo.PushedAt)}
 	}
+}
+
+func (r *ReposResponse) getCsvTitle() []string {
+	return ReposCsvTitle
 }
