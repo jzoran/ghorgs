@@ -107,7 +107,6 @@ func (r *ReposResponse) toString() string {
 func (r *ReposResponse) appendCsv(c *Csv) {
 	if c.Records == nil {
 		c.Records = make(map[string][]string)
-		c.Keys = make([]string, 0)
 	}
 
 	for _, repo := range r.Data.Org.Repos.Nodes {

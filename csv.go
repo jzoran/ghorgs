@@ -4,7 +4,6 @@
 package main
 
 import (
-	"encoding/csv"
 	"log"
 	"os"
 	"reflect"
@@ -17,27 +16,8 @@ type Csv struct {
 }
 
 func makeCsv(filename string) *Csv {
-	f, err := os.Open(filename)
-	if err != nil {
-		return &Csv{filename, nil, nil}
-	}
-	defer f.Close()
-
-	r := csv.NewReader(f)
-	r.Comma = '\t'
-	lines, err := r.ReadAll()
-	if err != nil {
-		panic(err)
-	}
-
-	records := make(map[string][]string)
 	keys := make([]string, 0)
-	for _, line := range lines {
-		records[line[0]] = line[1:]
-		keys = append(keys, line[0])
-	}
-
-	return &Csv{filename, records, keys}
+	return &Csv{filename, nil, keys}
 }
 
 func (c *Csv) flush(title []string) {
@@ -45,7 +25,7 @@ func (c *Csv) flush(title []string) {
 
 	if _, err := os.Stat(c.FileName); err == nil || os.IsNotExist(err) {
 		f, err = os.OpenFile(c.FileName,
-			os.O_CREATE|os.O_WRONLY, 0644)
+			os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 		if err != nil {
 			panic(err)
 		}
@@ -97,13 +77,6 @@ func (c *Csv) log() {
 	}
 }
 
-func (c *Csv) existsKey(item string) bool {
-	_, exists := c.Records[item]
-	return exists
-}
-
 func (c *Csv) addKey(key string) {
-	if !c.existsKey(key) {
-		c.Keys = append(c.Keys, key)
-	}
+	c.Keys = append(c.Keys, key)
 }
