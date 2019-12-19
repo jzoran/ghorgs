@@ -8,6 +8,7 @@ query {
       nodes {
         id
         name
+        isPrivate
         url
         diskUsage
         updatedAt

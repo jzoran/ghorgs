@@ -14,11 +14,12 @@ const ReposNextGraphQlJson = "config/repos_next.json"
 const ReposCsv = "repos.csv"
 const ReposName = "repos"
 
-var ReposCsvTitle = []string{"Id", "Name", "Url", "DiskUsage (kB)", "Updated", "Last Push"}
+var ReposCsvTitle = []string{"Id", "Name", "Type", "Url", "DiskUsage (kB)", "Updated", "Last Push"}
 
 type Repository struct {
 	Id        string    `json:"id"`
 	Name      string    `json:"name"`
+	Private   bool      `json:"isPrivate"`
 	Url       string    `json:"url"`
 	DiskUsage int       `json:"diskUsage"`
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -111,7 +112,12 @@ func (r *ReposResponse) appendCsv(c *Csv) {
 
 	for _, repo := range r.Data.Org.Repos.Nodes {
 		c.addKey(repo.Id)
+		isPrivate := "PUBLIC"
+		if repo.Private {
+			isPrivate = "PRIVATE"
+		}
 		c.Records[repo.Id] = []string{repo.Name,
+			isPrivate,
 			repo.Url,
 			fmt.Sprintf("%d", repo.DiskUsage),
 			fmt.Sprintf("%s", repo.UpdatedAt),
