@@ -17,17 +17,16 @@ an organization and then writes the output into a csv files.
 
 #### config.yaml
 * url: URL to GitHub API, should be https://api.github.com/graphql
-* token: String security token used on Github.
-      Required GitHub scopes covered by token are:
-        - user,
-        - public_repo,
-        - repo,
-        - repo_deployment,
-        - repo:status,
-        - read:repo_hook,
-        - read:org,
-        - read:public_key,
-        - read:gpg_key
+* token: String security token used on Github. Required GitHub scopes covered by token are:
+  * user,
+  * public_repo,
+  * repo,
+  * repo_deployment,
+  * repo:status,
+  * read:repo_hook,
+  * read:org,
+  * read:public_key,
+  * read:gpg_key
 * organization: Organizational account which is being analyzed
 * per_page: Integer denoting the number of items listed in paged output
 * time_out: Seconds until connection is abandoned
@@ -51,11 +50,13 @@ Run `go get gopkg.in/yaml.v3` to make sure it's downloaded.
 
 ## Run
 `ghorgs [-h] [-v] [-t Token] [-o Organization]`
+
 where:
-    * -h = prints help
-    * -v = enables verbose prints to stdout
-    * -t = overrides config token
-    * -o = overrides config organization
+
+* h = prints help
+* v = enables verbose prints to stdout
+* t = overrides config token
+* o = overrides config organization
 
 ## LICENSE
 Currently the tool is proprietary.
