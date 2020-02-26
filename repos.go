@@ -92,7 +92,7 @@ func (r *ReposResponse) hasNext() bool {
 	return r.Data.Org.Repos.PageInfo.HasNext
 }
 
-func (r *ReposResponse) getAfter() string {
+func (r *ReposResponse) getNext() string {
 	return r.Data.Org.Repos.PageInfo.End
 }
 

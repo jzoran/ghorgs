@@ -109,7 +109,7 @@ func (r *UsersResponse) hasNext() bool {
 	return r.Data.Org.Members.PageInfo.HasNext
 }
 
-func (r *UsersResponse) getAfter() string {
+func (r *UsersResponse) getNext() string {
 	return r.Data.Org.Members.PageInfo.End
 }
 

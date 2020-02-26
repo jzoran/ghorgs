@@ -69,7 +69,7 @@ func main() {
 		}
 
 		for proto.hasNext() {
-			req.getNext(proto.getAfter())
+			req.getNext(proto.getNext())
 
 			gitHubRequest = makeGitHubRequest(req.getGraphQlJson(), args.Token)
 			resp = gitHubRequest.fetch()

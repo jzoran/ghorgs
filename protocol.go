@@ -18,7 +18,7 @@ type Protocol interface {
 	fromJsonBuffer(buff []byte)
 	getTotal() int
 	hasNext() bool
-	getAfter() string
+	getNext() string
 
 	toString() string
 }
