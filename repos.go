@@ -9,10 +9,12 @@ import (
 	"time"
 )
 
-const ReposGraphQlJson = "config/repos.json"
-const ReposNextGraphQlJson = "config/repos_next.json"
-const ReposCsv = "repos.csv"
-const ReposName = "repos"
+const (
+	ReposGraphQlJson     = "config/repos.json"
+	ReposNextGraphQlJson = "config/repos_next.json"
+	ReposCsv             = "repos.csv"
+	ReposName            = "repos"
+)
 
 var ReposCsvTitle = []string{"Id", "Name", "Type", "Url", "DiskUsage (kB)", "Updated", "Last Push"}
 
