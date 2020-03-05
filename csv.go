@@ -4,20 +4,18 @@
 package main
 
 import (
-	"log"
 	"os"
 	"reflect"
 )
 
 type Csv struct {
 	FileName string
-	Records  map[string][]string
-	Keys     []string
+	Data     *Table
 }
 
 func makeCsv(filename string) *Csv {
-	keys := make([]string, 0)
-	return &Csv{filename, nil, keys}
+	data := makeTable()
+	return &Csv{filename, data}
 }
 
 func (c *Csv) flush(title []string) {
@@ -39,12 +37,14 @@ func (c *Csv) flush(title []string) {
 		panic(err)
 	}
 
-	for _, k := range c.Keys {
-		if k == title[0] && reflect.DeepEqual(c.Records[k], title[1:]) {
+	for _, k := range c.Data.Keys {
+		// if by any chance we've loaded a dump from disk
+		// and it includes title line, just skip it now
+		if k == title[0] && reflect.DeepEqual(c.Data.Records[k], title[1:]) {
 			continue
 		}
 
-		s = k + "\t" + lineToString(c.Records[k])
+		s = k + "\t" + lineToString(c.Data.Records[k])
 		if _, err := f.WriteString(s + "\n"); err != nil {
 			panic(err)
 		}
@@ -64,19 +64,5 @@ func lineToString(line []string) string {
 }
 
 func (c *Csv) log() {
-	var s string
-	for id, line := range c.Records {
-		s = id + "\t"
-		for i, cell := range line {
-			s = s + cell
-			if i < len(line)-1 {
-				s = s + "\t"
-			}
-		}
-		log.Print(s + "\n")
-	}
-}
-
-func (c *Csv) addKey(key string) {
-	c.Keys = append(c.Keys, key)
+	c.Data.log()
 }

@@ -108,17 +108,17 @@ func (r *ReposResponse) toString() string {
 }
 
 func (r *ReposResponse) appendCsv(c *Csv) {
-	if c.Records == nil {
-		c.Records = make(map[string][]string)
+	if c.Data.Records == nil {
+		c.Data.Records = make(map[string][]string)
 	}
 
 	for _, repo := range r.Data.Org.Repos.Nodes {
-		c.addKey(repo.Id)
+		c.Data.addKey(repo.Id)
 		isPrivate := "PUBLIC"
 		if repo.Private {
 			isPrivate = "PRIVATE"
 		}
-		c.Records[repo.Id] = []string{repo.Name,
+		c.Data.Records[repo.Id] = []string{repo.Name,
 			isPrivate,
 			repo.Url,
 			fmt.Sprintf("%d", repo.DiskUsage),

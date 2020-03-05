@@ -123,9 +123,9 @@ func (r *UsersResponse) toString() string {
 }
 
 func (r *UsersResponse) appendCsv(c *Csv) {
-	if c.Records == nil {
-		c.Records = make(map[string][]string)
-		c.Keys = make([]string, 0)
+	if c.Data.Records == nil {
+		c.Data.Records = make(map[string][]string)
+		c.Data.Keys = make([]string, 0)
 	}
 
 	for _, user := range r.Data.Org.Members.Nodes {
@@ -160,8 +160,8 @@ func (r *UsersResponse) appendCsv(c *Csv) {
 			}
 		}
 
-		c.addKey(user.Member.Id)
-		c.Records[user.Member.Id] = []string{user.Member.Login,
+		c.Data.addKey(user.Member.Id)
+		c.Data.Records[user.Member.Id] = []string{user.Member.Login,
 			name,
 			user.Role,
 			fmt.Sprintf("%t", user.Has2FA),
