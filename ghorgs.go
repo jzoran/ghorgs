@@ -65,7 +65,8 @@ func init() {
 		"    - all = all the tables,\n"+
 		"    - comma separated list of one or more of:\n"+
 		"        "+keysOfMap(protoMap)+"\n")
-	flag.StringVar(&args.By, "b", "Id", "Name of the column to use for sorting the result of dump.\n")
+	flag.StringVar(&args.By, "b", "", "Name of the column to use for sorting the result of dump. "+
+		" If empty, default sort on GitHub is creation date.\n")
 	flag.StringVar(&args.Token, "t", "", "Security token used on Github.\n"+
 		"  Required GitHub scopes covered by token are:\n"+
 		"    - user,\n"+
@@ -99,10 +100,12 @@ func main() {
 	var cmd commands.Command
 	switch args.Cmd {
 	case "dump":
-		err = validateProtocolSortBy(activeProtos)
-		if err != nil {
-			fmt.Println(err)
-			return
+		if args.By != "" {
+			err = validateProtocolSortBy(activeProtos)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
 		}
 		cmd = &commands.Dump{By: args.By}
 	case "remove":

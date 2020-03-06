@@ -23,13 +23,14 @@ func (d *Dump) Do(protoMap map[string]protocols.Protocol) error {
 		proto := protoMap[name]
 		filename := proto.GetCsvFile()
 
-		tt, err := t.SortByColumn(d.By)
-		if err != nil {
-			panic(err)
-		}
-
 		fmt.Printf("\nDumping %s...", filename)
-		csv := &cache.Csv{filename, tt}
+		if d.By != "" {
+			_, err := t.SortByColumn(d.By)
+			if err != nil {
+				panic(err)
+			}
+		}
+		csv := &cache.Csv{filename, t}
 		csv.Flush(proto.GetCsvTitle())
 	}
 
