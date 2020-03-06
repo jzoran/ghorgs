@@ -1,10 +1,11 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package main
+package gnet
 
 import (
 	"fmt"
+	"ghorgs/utils"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -19,7 +20,7 @@ type Request struct {
 	Timeout time.Duration // in sec
 }
 
-func (r *Request) fetch() []byte {
+func (r *Request) Fetch() []byte {
 	reqbody := strings.NewReader(r.Query)
 	req, err := http.NewRequest("POST", r.Url, reqbody)
 	if err != nil {
@@ -41,7 +42,7 @@ func (r *Request) fetch() []byte {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		if debug.Verbose {
+		if utils.Debug.Verbose {
 			log.Print(r.Query)
 		}
 		panic(fmt.Sprintf("HttpResponse: %d", resp.StatusCode))

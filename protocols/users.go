@@ -1,20 +1,23 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package main
+package protocols
 
 import (
 	"encoding/json"
 	"fmt"
+	"ghorgs/cache"
 	"time"
 )
 
-const UsersGraphQlJson = "config/users.json"
-const UsersNextGraphQlJson = "config/users_next.json"
-const UsersCsv = "users.csv"
-const UsersName = "users"
+const (
+	usersGraphQlJson     = "config/users.json"
+	usersNextGraphQlJson = "config/users_next.json"
+	usersCsv             = "users.csv"
+	usersName            = "users"
+)
 
-var UsersCsvTitle = []string{"Id", "Login", "Name", "Admin", "2FA", "Email", "Company", " Url", "Bio", "Status", "Updated", "Repositories Contributed To"}
+var usersCsvTitle = []string{"Id", "Login", "Name", "Admin", "2FA", "Email", "Company", " Url", "Bio", "Status", "Updated", "Repositories Contributed To"}
 
 type UserStatus struct {
 	Message string `json:"message"`
@@ -71,49 +74,49 @@ type UsersQuery struct {
 }
 
 func makeUsersQuery(organization string) *UsersQuery {
-	return &UsersQuery{makeQuery(UsersGraphQlJson, organization)}
+	return &UsersQuery{makeQuery(usersGraphQlJson, organization)}
 }
 
-func (q *UsersQuery) getCount() int {
+func (q *UsersQuery) GetCount() int {
 	return q.Query.Count
 }
 
-func (q *UsersQuery) getNext(after string) {
-	q.Query.getNext(UsersNextGraphQlJson, after)
+func (q *UsersQuery) GetNext(after string) {
+	q.Query.getNext(usersNextGraphQlJson, after)
 }
 
-func (r *UsersResponse) getName() string {
-	return UsersName
+func (r *UsersResponse) GetName() string {
+	return usersName
 }
 
-func (r *UsersResponse) makeCsv() *Csv {
-	return makeCsv(UsersCsv)
+func (r *UsersResponse) MakeTable() *cache.Table {
+	return cache.MakeTable()
 }
 
-func (r *UsersResponse) makeQuery(org string) IQuery {
+func (r *UsersResponse) MakeQuery(org string) IQuery {
 	return makeUsersQuery(org)
 }
 
-func (r *UsersResponse) fromJsonBuffer(buff []byte) {
+func (r *UsersResponse) FromJsonBuffer(buff []byte) {
 	err := json.Unmarshal(buff, &r)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func (r *UsersResponse) getTotal() int {
+func (r *UsersResponse) GetTotal() int {
 	return r.Data.Org.Members.Total
 }
 
-func (r *UsersResponse) hasNext() bool {
+func (r *UsersResponse) HasNext() bool {
 	return r.Data.Org.Members.PageInfo.HasNext
 }
 
-func (r *UsersResponse) getNext() string {
+func (r *UsersResponse) GetNext() string {
 	return r.Data.Org.Members.PageInfo.End
 }
 
-func (r *UsersResponse) toString() string {
+func (r *UsersResponse) ToString() string {
 	s, err := json.Marshal(r)
 	if err != nil {
 		panic(err)
@@ -122,10 +125,10 @@ func (r *UsersResponse) toString() string {
 	return string(s)
 }
 
-func (r *UsersResponse) appendCsv(c *Csv) {
-	if c.Data.Records == nil {
-		c.Data.Records = make(map[string][]string)
-		c.Data.Keys = make([]string, 0)
+func (r *UsersResponse) AppendTable(c *cache.Table) {
+	if c.Records == nil {
+		c.Records = make(map[string][]string)
+		c.Keys = make([]string, 0)
 	}
 
 	for _, user := range r.Data.Org.Members.Nodes {
@@ -160,8 +163,8 @@ func (r *UsersResponse) appendCsv(c *Csv) {
 			}
 		}
 
-		c.Data.addKey(user.Member.Id)
-		c.Data.Records[user.Member.Id] = []string{user.Member.Login,
+		c.AddKey(user.Member.Id)
+		c.Records[user.Member.Id] = []string{user.Member.Login,
 			name,
 			user.Role,
 			fmt.Sprintf("%t", user.Has2FA),
@@ -175,6 +178,10 @@ func (r *UsersResponse) appendCsv(c *Csv) {
 	}
 }
 
-func (r *UsersResponse) getCsvTitle() []string {
-	return UsersCsvTitle
+func (r *UsersResponse) GetCsvTitle() []string {
+	return usersCsvTitle
+}
+
+func (r *UsersResponse) GetCsvFile() string {
+	return usersCsv
 }

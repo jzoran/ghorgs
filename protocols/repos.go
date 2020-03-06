@@ -1,22 +1,23 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package main
+package protocols
 
 import (
 	"encoding/json"
 	"fmt"
+	"ghorgs/cache"
 	"time"
 )
 
 const (
-	ReposGraphQlJson     = "config/repos.json"
-	ReposNextGraphQlJson = "config/repos_next.json"
-	ReposCsv             = "repos.csv"
-	ReposName            = "repos"
+	reposGraphQlJson     = "config/repos.json"
+	reposNextGraphQlJson = "config/repos_next.json"
+	reposCsv             = "repos.csv"
+	reposName            = "repos"
 )
 
-var ReposCsvTitle = []string{"Id", "Name", "Type", "Url", "DiskUsage (kB)", "Updated", "Last Push"}
+var reposCsvTitle = []string{"Id", "Name", "Type", "Url", "DiskUsage (kB)", "Updated", "Last Push"}
 
 type Repository struct {
 	Id        string    `json:"id"`
@@ -56,49 +57,49 @@ type ReposQuery struct {
 }
 
 func makeReposQuery(organization string) *ReposQuery {
-	return &ReposQuery{makeQuery(ReposGraphQlJson, organization)}
+	return &ReposQuery{makeQuery(reposGraphQlJson, organization)}
 }
 
-func (q *ReposQuery) getCount() int {
+func (q *ReposQuery) GetCount() int {
 	return q.Query.Count
 }
 
-func (q *ReposQuery) getNext(after string) {
-	q.Query.getNext(ReposNextGraphQlJson, after)
+func (q *ReposQuery) GetNext(after string) {
+	q.Query.getNext(reposNextGraphQlJson, after)
 }
 
-func (r *ReposResponse) getName() string {
-	return ReposName
+func (r *ReposResponse) GetName() string {
+	return reposName
 }
 
-func (r *ReposResponse) makeCsv() *Csv {
-	return makeCsv(ReposCsv)
+func (r *ReposResponse) MakeTable() *cache.Table {
+	return cache.MakeTable()
 }
 
-func (r *ReposResponse) makeQuery(org string) IQuery {
+func (r *ReposResponse) MakeQuery(org string) IQuery {
 	return makeReposQuery(org)
 }
 
-func (r *ReposResponse) fromJsonBuffer(buff []byte) {
+func (r *ReposResponse) FromJsonBuffer(buff []byte) {
 	err := json.Unmarshal(buff, &r)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func (r *ReposResponse) getTotal() int {
+func (r *ReposResponse) GetTotal() int {
 	return r.Data.Org.Repos.Total
 }
 
-func (r *ReposResponse) hasNext() bool {
+func (r *ReposResponse) HasNext() bool {
 	return r.Data.Org.Repos.PageInfo.HasNext
 }
 
-func (r *ReposResponse) getNext() string {
+func (r *ReposResponse) GetNext() string {
 	return r.Data.Org.Repos.PageInfo.End
 }
 
-func (r *ReposResponse) toString() string {
+func (r *ReposResponse) ToString() string {
 	s, err := json.Marshal(r)
 	if err != nil {
 		panic(err)
@@ -107,18 +108,18 @@ func (r *ReposResponse) toString() string {
 	return string(s)
 }
 
-func (r *ReposResponse) appendCsv(c *Csv) {
-	if c.Data.Records == nil {
-		c.Data.Records = make(map[string][]string)
+func (r *ReposResponse) AppendTable(c *cache.Table) {
+	if c.Records == nil {
+		c.Records = make(map[string][]string)
 	}
 
 	for _, repo := range r.Data.Org.Repos.Nodes {
-		c.Data.addKey(repo.Id)
+		c.AddKey(repo.Id)
 		isPrivate := "PUBLIC"
 		if repo.Private {
 			isPrivate = "PRIVATE"
 		}
-		c.Data.Records[repo.Id] = []string{repo.Name,
+		c.Records[repo.Id] = []string{repo.Name,
 			isPrivate,
 			repo.Url,
 			fmt.Sprintf("%d", repo.DiskUsage),
@@ -127,6 +128,10 @@ func (r *ReposResponse) appendCsv(c *Csv) {
 	}
 }
 
-func (r *ReposResponse) getCsvTitle() []string {
-	return ReposCsvTitle
+func (r *ReposResponse) GetCsvTitle() []string {
+	return reposCsvTitle
+}
+
+func (r *ReposResponse) GetCsvFile() string {
+	return reposCsv
 }

@@ -1,10 +1,11 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package main
+package protocols
 
 import (
 	"fmt"
+	"ghorgs/gnet"
 	"io/ioutil"
 )
 
@@ -15,17 +16,17 @@ type Query struct {
 }
 
 type IQuery interface {
-	getGraphQlJson() string
-	getNext(after string)
-	getCount() int
+	GetGraphQlJson() string
+	GetNext(after string)
+	GetCount() int
 }
 
 func makeQuery(jsonFile string, organization string) Query {
 	if organization == "" {
-		organization = githubConfig.Organization
+		organization = gnet.Conf.Organization
 	}
 
-	if githubConfig.Organization == "" {
+	if gnet.Conf.Organization == "" {
 		panic("Missing GitHub Organization.")
 	}
 
@@ -34,15 +35,15 @@ func makeQuery(jsonFile string, organization string) Query {
 		panic(err)
 	}
 	return Query{organization,
-		githubConfig.PerPage,
-		fmt.Sprintf(string(bytes), organization, githubConfig.PerPage)}
+		gnet.Conf.PerPage,
+		fmt.Sprintf(string(bytes), organization, gnet.Conf.PerPage)}
 }
 
-func (q *Query) getCount() int {
+func (q *Query) GetCount() int {
 	return q.Count
 }
 
-func (q *Query) getGraphQlJson() string {
+func (q *Query) GetGraphQlJson() string {
 	return q.GraphQlQueryJson
 }
 

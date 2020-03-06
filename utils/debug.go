@@ -1,10 +1,10 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package main
+package utils
 
-type Debug struct {
+type DebugConfiguration struct {
 	Verbose bool
 }
 
-var debug = Debug{false}
+var Debug = DebugConfiguration{false}

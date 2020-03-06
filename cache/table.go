@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package main
+package cache
 
 import (
 	"log"
@@ -12,12 +12,12 @@ type Table struct {
 	Keys    []string
 }
 
-func makeTable() *Table {
+func MakeTable() *Table {
 	keys := make([]string, 0)
 	return &Table{nil, keys}
 }
 
-func (t *Table) addKey(key string) {
+func (t *Table) AddKey(key string) {
 	t.Keys = append(t.Keys, key)
 }
 

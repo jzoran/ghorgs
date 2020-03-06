@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package main
+package gnet
 
 import (
 	"gopkg.in/yaml.v3"
@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-type GitHubConfig struct {
+type GitHubConfiguration struct {
 	Url          string `yaml:"url"`
 	Token        string `yaml:"token"`
 	Organization string `yaml:"organization"`
@@ -18,7 +18,7 @@ type GitHubConfig struct {
 	TimeOut      int    `yaml:"time_out"`
 }
 
-var githubConfig GitHubConfig
+var Conf GitHubConfiguration
 
 func init() {
 	f, err := os.Open("config/config.yaml")
@@ -32,20 +32,20 @@ func init() {
 		panic(err)
 	}
 
-	yaml.Unmarshal(values, &githubConfig)
+	yaml.Unmarshal(values, &Conf)
 }
 
-func makeGitHubRequest(query string, token string) *Request {
+func MakeGitHubRequest(query string, token string) *Request {
 	if token != "" {
-		githubConfig.Token = token
+		Conf.Token = token
 	}
 
-	if githubConfig.Token == "" {
+	if Conf.Token == "" {
 		panic("Missing GitHub token.")
 	}
 
-	return &Request{githubConfig.Url,
-		map[string]string{"Authorization": "bearer " + githubConfig.Token},
+	return &Request{Conf.Url,
+		map[string]string{"Authorization": "bearer " + Conf.Token},
 		query,
-		time.Duration(githubConfig.TimeOut) * time.Second}
+		time.Duration(Conf.TimeOut) * time.Second}
 }

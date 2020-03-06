@@ -4,25 +4,65 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
+	"ghorgs/commands"
+	"ghorgs/protocols"
+	"ghorgs/utils"
 	"log"
 	"os"
+	"strings"
 )
 
 type Args struct {
 	Help         bool
 	Verbose      bool
+	Cmd          string
+	Proj         string
+	N            int
+	Since        string
+	Names        string
 	Token        string
 	Organization string
 }
 
 var args Args
-var protocols []Protocol
+var protoMap map[string]protocols.Protocol
 
 func init() {
+	repos := &protocols.ReposResponse{}
+	users := &protocols.UsersResponse{}
+	protoMap = map[string]protocols.Protocol{
+		repos.GetName(): repos,
+		users.GetName(): users,
+	}
+
 	flag.BoolVar(&args.Help, "h", false, "Prints this help.")
 	flag.BoolVar(&args.Verbose, "v", false, "Prints verbose debug prints.")
+	flag.StringVar(&args.Cmd, "c", "dump", "Command to execute on GitHub. Can be one of:\n"+
+		"    - dump\n"+
+		"        Dumps the data into csv files.\n"+
+		"            -d = \"all\" for full dump or comma separated list of one or more of:\n"+
+		"                   "+keysOfMap(protoMap)+"\n"+
+		"        Dump is the default command."+
+		"    - archive\n"+
+		"        Removes GitHub repositories according to:\n"+
+		"            - n = least active n\n"+
+		"            - s = inactive since <date>\n"+
+		"            - r = comma separated list of repository names\n"+
+		"        downloads the repository, creates a tarball and stores it in:\n"+
+		"            - o = output folder\n"+
+		"    - remove\n"+
+		"        Removes GitHub user from the organizational account according to:\n"+
+		"            - n = least active n\n"+
+		"            - s = inactive since <date>\n"+
+		"            - r = comma separated list of repository names\n")
+	flag.StringVar(&args.Proj, "d", "all", "List of comma separated tables from the database"+
+		" to apply the command on. Can be:\n"+
+		"    - all = all the tables,\n"+
+		"    - repos = the repositories table,\n"+
+		"    - users = the users table.")
 	flag.StringVar(&args.Token, "t", "", "Security token used on Github.\n"+
 		"  Required GitHub scopes covered by token are:\n"+
 		"    - user,\n"+
@@ -36,10 +76,8 @@ func init() {
 		"    - read:gpg_key")
 	flag.StringVar(&args.Organization, "o", "", "Organizational account being analyzed.")
 	flag.Parse()
-	debug.Verbose = args.Verbose
+	utils.Debug.Verbose = args.Verbose
 	log.SetOutput(os.Stdout)
-
-	protocols = []Protocol{&ReposResponse{}, &UsersResponse{}}
 }
 
 func main() {
@@ -48,45 +86,52 @@ func main() {
 		return
 	}
 
-	for _, proto := range protocols {
-		csv := proto.makeCsv()
-		req := proto.makeQuery(args.Organization)
-		gitHubRequest := makeGitHubRequest(req.getGraphQlJson(), args.Token)
-		resp := gitHubRequest.fetch()
-
-		proto.fromJsonBuffer(resp)
-		proto.appendCsv(csv)
-
-		counter := req.getCount()
-		if debug.Verbose {
-			log.Print(proto.toString())
-		} else {
-			if counter <= proto.getTotal() {
-				fmt.Printf("\n%s: %d/%d", proto.getName(), counter, proto.getTotal())
-			} else {
-				fmt.Printf("\n%s: %d/%d", proto.getName(), proto.getTotal(), proto.getTotal())
-			}
-		}
-
-		for proto.hasNext() {
-			req.getNext(proto.getNext())
-
-			gitHubRequest = makeGitHubRequest(req.getGraphQlJson(), args.Token)
-			resp = gitHubRequest.fetch()
-
-			proto.fromJsonBuffer(resp)
-			proto.appendCsv(csv)
-			if debug.Verbose {
-				log.Print(proto.toString())
-			} else {
-				counter += req.getCount()
-				if counter <= proto.getTotal() {
-					fmt.Printf("\r%s: %d/%d", proto.getName(), counter, proto.getTotal())
-				} else {
-					fmt.Printf("\r%s: %d/%d", proto.getName(), proto.getTotal(), proto.getTotal())
-				}
-			}
-		}
-		csv.flush(proto.getCsvTitle())
+	activeProtos, err := validateProtocols()
+	if err != nil {
+		fmt.Println(err)
+		flag.Usage()
+		return
 	}
+
+	var cmd commands.Command
+	switch args.Cmd {
+	case "dump":
+		cmd = &commands.Dump{}
+	case "remove":
+		cmd = &commands.Remove{N: args.N, Since: args.Since, Names: args.Names}
+	default:
+		fmt.Println(fmt.Sprintf("Command `%s` not defined.\n", args.Cmd))
+		flag.Usage()
+		return
+	}
+
+	cmd.AddCache(commands.Cache(activeProtos, protoMap))
+	cmd.Do(protoMap)
+}
+
+func validateProtocols() ([]string, error) {
+	var activeProtos = make([]string, 0, len(protoMap))
+	if args.Proj == "all" {
+		for protoName, _ := range protoMap {
+			activeProtos = append(activeProtos, protoName)
+		}
+	} else {
+		var slices = strings.Split(args.Proj, ",")
+		for _, s := range slices {
+			_, ok := protoMap[s]
+			if !ok {
+				return []string{}, errors.New(fmt.Sprintf("Unknown table: %s\n", s))
+			}
+			activeProtos = append(activeProtos, s)
+		}
+	}
+	return activeProtos, nil
+}
+
+func keysOfMap(m map[string]protocols.Protocol) string {
+	var keys = ""
+	for key, _ := range m {
+		keys = keys + key + " ,"
+	}
+	return keys[:len(keys)-2]
 }

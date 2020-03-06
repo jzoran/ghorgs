@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package main
+package cache
 
 import (
 	"os"
@@ -13,12 +13,12 @@ type Csv struct {
 	Data     *Table
 }
 
-func makeCsv(filename string) *Csv {
-	data := makeTable()
+func MakeCsv(filename string) *Csv {
+	data := MakeTable()
 	return &Csv{filename, data}
 }
 
-func (c *Csv) flush(title []string) {
+func (c *Csv) Flush(title []string) {
 	var f *os.File
 
 	if _, err := os.Stat(c.FileName); err == nil || os.IsNotExist(err) {
@@ -63,6 +63,6 @@ func lineToString(line []string) string {
 	return s
 }
 
-func (c *Csv) log() {
+func (c *Csv) Log() {
 	c.Data.log()
 }
