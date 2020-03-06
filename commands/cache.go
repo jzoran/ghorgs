@@ -16,7 +16,7 @@ func Cache(request []string, using map[string]protocols.Protocol) map[string]*ca
 	result := make(map[string]*cache.Table, len(request))
 	for _, protoName := range request {
 		proto := using[protoName]
-		fmt.Printf("Caching %s...", protoName)
+		fmt.Printf("\nCaching %s...", protoName)
 
 		t := proto.MakeTable()
 		req := proto.MakeQuery(gnet.Conf.Organization)
