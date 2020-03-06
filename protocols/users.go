@@ -90,7 +90,7 @@ func (r *UsersResponse) GetName() string {
 }
 
 func (r *UsersResponse) MakeTable() *cache.Table {
-	return cache.MakeTable()
+	return cache.MakeTable(usersCsvTitle)
 }
 
 func (r *UsersResponse) MakeQuery(org string) IQuery {

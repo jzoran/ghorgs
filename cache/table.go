@@ -4,17 +4,22 @@
 package cache
 
 import (
+	"errors"
+	"fmt"
 	"log"
+	"sort"
 )
 
 type Table struct {
 	Records map[string][]string
 	Keys    []string
+	Columns []string
+	sortCol int
 }
 
-func MakeTable() *Table {
+func MakeTable(columns []string) *Table {
 	keys := make([]string, 0)
-	return &Table{nil, keys}
+	return &Table{Records: nil, Keys: keys, Columns: columns}
 }
 
 func (t *Table) AddKey(key string) {
@@ -33,4 +38,32 @@ func (t *Table) log() {
 		}
 		log.Print(s + "\n")
 	}
+}
+
+// sort interface + method
+type By Table
+
+func (a By) Len() int { return len(a.Keys) }
+func (a By) Less(i, j int) bool {
+	return a.Records[a.Keys[i]][a.sortCol] < a.Records[a.Keys[j]][a.sortCol]
+}
+func (a By) Swap(i, j int) {
+	a.Keys[i], a.Keys[j] = a.Keys[j], a.Keys[i]
+}
+
+func (t *Table) SortByColumn(column string) (*Table, error) {
+	t.sortCol = -1
+	for i, val := range t.Columns {
+		if val == column {
+			t.sortCol = i - 1 // Columns include "Id" at index 0
+			break
+		}
+	}
+	if t.sortCol == -2 {
+		return nil, errors.New(fmt.Sprintf("Invalid sort column: %s\n", column))
+	}
+
+	tt := *t
+	sort.Sort(By(tt))
+	return &tt, nil
 }

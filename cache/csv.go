@@ -14,7 +14,7 @@ type Csv struct {
 }
 
 func MakeCsv(filename string) *Csv {
-	data := MakeTable()
+	data := MakeTable([]string{})
 	return &Csv{filename, data}
 }
 

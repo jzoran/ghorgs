@@ -73,7 +73,7 @@ func (r *ReposResponse) GetName() string {
 }
 
 func (r *ReposResponse) MakeTable() *cache.Table {
-	return cache.MakeTable()
+	return cache.MakeTable(reposCsvTitle)
 }
 
 func (r *ReposResponse) MakeQuery(org string) IQuery {

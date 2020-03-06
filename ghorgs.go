@@ -20,6 +20,7 @@ type Args struct {
 	Verbose      bool
 	Cmd          string
 	Proj         string
+	By           string
 	N            int
 	Since        string
 	Names        string
@@ -45,7 +46,8 @@ func init() {
 		"        Dumps the data into csv files.\n"+
 		"            -d = \"all\" for full dump or comma separated list of one or more of:\n"+
 		"                   "+keysOfMap(protoMap)+"\n"+
-		"        Dump is the default command."+
+		"            -b = dump sorted by this column (default is Id).\n"+
+		"        Dump by time of creation is the default command.\n"+
 		"    - archive\n"+
 		"        Removes GitHub repositories according to:\n"+
 		"            - n = least active n\n"+
@@ -61,8 +63,9 @@ func init() {
 	flag.StringVar(&args.Proj, "d", "all", "List of comma separated tables from the database"+
 		" to apply the command on. Can be:\n"+
 		"    - all = all the tables,\n"+
-		"    - repos = the repositories table,\n"+
-		"    - users = the users table.")
+		"    - comma separated list of one or more of:\n"+
+		"        "+keysOfMap(protoMap)+"\n")
+	flag.StringVar(&args.By, "b", "Id", "Name of the column to use for sorting the result of dump.\n")
 	flag.StringVar(&args.Token, "t", "", "Security token used on Github.\n"+
 		"  Required GitHub scopes covered by token are:\n"+
 		"    - user,\n"+
@@ -96,7 +99,12 @@ func main() {
 	var cmd commands.Command
 	switch args.Cmd {
 	case "dump":
-		cmd = &commands.Dump{}
+		err = validateProtocolSortBy(activeProtos)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		cmd = &commands.Dump{By: args.By}
 	case "remove":
 		cmd = &commands.Remove{N: args.N, Since: args.Since, Names: args.Names}
 	default:
@@ -126,6 +134,19 @@ func validateProtocols() ([]string, error) {
 		}
 	}
 	return activeProtos, nil
+}
+
+func validateProtocolSortBy(activeProtos []string) error {
+	res := true
+	for _, protoName := range activeProtos {
+		proto := protoMap[protoName]
+		res = res && utils.StringInSlice(args.By, proto.GetCsvTitle())
+	}
+	if res {
+		return nil
+	}
+
+	return errors.New("Sort by column not found.\n")
 }
 
 func keysOfMap(m map[string]protocols.Protocol) string {
