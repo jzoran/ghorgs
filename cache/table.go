@@ -45,6 +45,9 @@ type By Table
 
 func (a By) Len() int { return len(a.Keys) }
 func (a By) Less(i, j int) bool {
+	if a.sortCol == -1 {
+		return a.Keys[i] < a.Keys[j]
+	}
 	return a.Records[a.Keys[i]][a.sortCol] < a.Records[a.Keys[j]][a.sortCol]
 }
 func (a By) Swap(i, j int) {
