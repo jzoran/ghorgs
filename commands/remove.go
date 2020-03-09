@@ -5,7 +5,7 @@ package commands
 
 import (
 	"ghorgs/cache"
-	"ghorgs/protocols"
+	"ghorgs/entities"
 )
 
 type Remove struct {
@@ -19,6 +19,6 @@ func (r *Remove) AddCache(c map[string]*cache.Table) {
 	r.data = c
 }
 
-func (r *Remove) Do(protoMap map[string]protocols.Protocol) error {
+func (r *Remove) Do(entityMap map[string]entities.Entity) error {
 	return nil
 }

@@ -8,7 +8,7 @@ import (
 	"flag"
 	"fmt"
 	"ghorgs/commands"
-	"ghorgs/protocols"
+	"ghorgs/entities"
 	"ghorgs/utils"
 	"log"
 	"os"
@@ -19,7 +19,7 @@ type Args struct {
 	Help         bool
 	Verbose      bool
 	Cmd          string
-	Proj         string
+	Entity       string
 	By           string
 	N            int
 	Since        string
@@ -29,12 +29,12 @@ type Args struct {
 }
 
 var args Args
-var protoMap map[string]protocols.Protocol
+var entityMap map[string]entities.Entity
 
 func init() {
-	repos := &protocols.ReposResponse{}
-	users := &protocols.UsersResponse{}
-	protoMap = map[string]protocols.Protocol{
+	repos := &entities.ReposResponse{}
+	users := &entities.UsersResponse{}
+	entityMap = map[string]entities.Entity{
 		repos.GetName(): repos,
 		users.GetName(): users,
 	}
@@ -44,8 +44,8 @@ func init() {
 	flag.StringVar(&args.Cmd, "c", "dump", "Command to execute on GitHub. Can be one of:\n"+
 		"    - dump\n"+
 		"        Dumps the data into csv files.\n"+
-		"            -d = \"all\" for full dump or comma separated list of one or more of:\n"+
-		"                   "+keysOfMap(protoMap)+"\n"+
+		"            -e = \"all\" for full dump or comma separated list of one or more of:\n"+
+		"                   "+keysOfMap(entityMap)+"\n"+
 		"            -b = Name of the table field to use for sorting the result of dump.\n"+
 		"                 If empty, default sort on GitHub is creation date.\n"+
 		"        Dump by time of creation is the default command.\n"+
@@ -61,11 +61,11 @@ func init() {
 		"            - n = least active n\n"+
 		"            - s = inactive since <date>\n"+
 		"            - r = comma separated list of repository names\n")
-	flag.StringVar(&args.Proj, "d", "all", "List of comma separated tables from the database"+
+	flag.StringVar(&args.Entity, "e", "all", "List of comma separated tables from the GitHub database"+
 		" to apply the command on. Can be:\n"+
 		"    - all = all the tables,\n"+
 		"    - comma separated list of one or more of:\n"+
-		"        "+keysOfMap(protoMap)+"\n")
+		"        "+keysOfMap(entityMap)+"\n")
 	flag.StringVar(&args.By, "b", "", "Name of the table field to use for sorting the result of dump. "+
 		"If empty, default sort on GitHub is creation date.\n")
 	flag.StringVar(&args.Token, "t", "", "Security token used on Github.\n"+
@@ -91,7 +91,7 @@ func main() {
 		return
 	}
 
-	activeProtos, err := validateProtocols()
+	activeEntities, err := validateEntities()
 	if err != nil {
 		fmt.Println(err)
 		flag.Usage()
@@ -102,7 +102,7 @@ func main() {
 	switch args.Cmd {
 	case "dump":
 		if args.By != "" {
-			err = validateProtocolSortBy(activeProtos)
+			err = validateEntitySortField(activeEntities)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -117,44 +117,44 @@ func main() {
 		return
 	}
 
-	cmd.AddCache(commands.Cache(activeProtos, protoMap))
-	cmd.Do(protoMap)
+	cmd.AddCache(commands.Cache(activeEntities, entityMap))
+	cmd.Do(entityMap)
 }
 
-func validateProtocols() ([]string, error) {
-	var activeProtos = make([]string, 0, len(protoMap))
-	if args.Proj == "all" {
-		for protoName, _ := range protoMap {
-			activeProtos = append(activeProtos, protoName)
+func validateEntities() ([]string, error) {
+	var activeEntities = make([]string, 0, len(entityMap))
+	if args.Entity == "all" {
+		for entityName, _ := range entityMap {
+			activeEntities = append(activeEntities, entityName)
 		}
 	} else {
-		var slices = strings.Split(args.Proj, ",")
+		var slices = strings.Split(args.Entity, ",")
 		for _, s := range slices {
-			_, ok := protoMap[s]
+			_, ok := entityMap[s]
 			if !ok {
 				return []string{}, errors.New(fmt.Sprintf("Unknown table: %s\n", s))
 			}
-			activeProtos = append(activeProtos, s)
+			activeEntities = append(activeEntities, s)
 		}
 	}
-	return activeProtos, nil
+	return activeEntities, nil
 }
 
-func validateProtocolSortBy(activeProtos []string) error {
-	for _, protoName := range activeProtos {
-		proto := protoMap[protoName]
-		if !proto.HasField(args.By) {
+func validateEntitySortField(activeEntities []string) error {
+	for _, entityName := range activeEntities {
+		entity := entityMap[entityName]
+		if !entity.HasField(args.By) {
 			return errors.New(fmt.Sprintf("Field `%s` not found in `%s`. Choose one of: %s.\n",
 				args.By,
-				protoName,
-				strings.Join(proto.GetTableFields(), ", ")))
+				entityName,
+				strings.Join(entity.GetTableFields(), ", ")))
 		}
 	}
 
 	return nil
 }
 
-func keysOfMap(m map[string]protocols.Protocol) string {
+func keysOfMap(m map[string]entities.Entity) string {
 	var keys = ""
 	for key, _ := range m {
 		keys = keys + key + ", "

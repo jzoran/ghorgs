@@ -5,10 +5,10 @@ package commands
 
 import (
 	"ghorgs/cache"
-	"ghorgs/protocols"
+	"ghorgs/entities"
 )
 
 type Command interface {
 	AddCache(c map[string]*cache.Table)
-	Do(protoMap map[string]protocols.Protocol) error
+	Do(entityMap map[string]entities.Entity) error
 }

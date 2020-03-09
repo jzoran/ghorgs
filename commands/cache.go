@@ -6,57 +6,57 @@ package commands
 import (
 	"fmt"
 	"ghorgs/cache"
+	"ghorgs/entities"
 	"ghorgs/gnet"
-	"ghorgs/protocols"
 	"ghorgs/utils"
 	"log"
 )
 
-func Cache(request []string, using map[string]protocols.Protocol) map[string]*cache.Table {
+func Cache(request []string, using map[string]entities.Entity) map[string]*cache.Table {
 	result := make(map[string]*cache.Table, len(request))
-	for _, protoName := range request {
-		proto := using[protoName]
-		fmt.Printf("\nCaching %s...", protoName)
+	for _, entityName := range request {
+		entity := using[entityName]
+		fmt.Printf("\nCaching %s...", entityName)
 
-		t := proto.MakeTable()
-		req := proto.MakeQuery(gnet.Conf.Organization)
+		t := entity.MakeTable()
+		req := entity.MakeQuery(gnet.Conf.Organization)
 		gitHubRequest := gnet.MakeGitHubRequest(req.GetGraphQlJson(), gnet.Conf.Token)
 		resp := gitHubRequest.Fetch()
 
-		proto.FromJsonBuffer(resp)
-		proto.AppendTable(t)
+		entity.FromJsonBuffer(resp)
+		entity.AppendTable(t)
 
 		counter := req.GetCount()
 		if utils.Debug.Verbose {
-			log.Print(proto.ToString())
+			log.Print(entity.ToString())
 		} else {
-			if counter <= proto.GetTotal() {
-				fmt.Printf("\n%s: %d/%d", proto.GetName(), counter, proto.GetTotal())
+			if counter <= entity.GetTotal() {
+				fmt.Printf("\n%s: %d/%d", entity.GetName(), counter, entity.GetTotal())
 			} else {
-				fmt.Printf("\n%s: %d/%d", proto.GetName(), proto.GetTotal(), proto.GetTotal())
+				fmt.Printf("\n%s: %d/%d", entity.GetName(), entity.GetTotal(), entity.GetTotal())
 			}
 		}
 
-		for proto.HasNext() {
-			req.GetNext(proto.GetNext())
+		for entity.HasNext() {
+			req.GetNext(entity.GetNext())
 
 			gitHubRequest = gnet.MakeGitHubRequest(req.GetGraphQlJson(), gnet.Conf.Token)
 			resp = gitHubRequest.Fetch()
 
-			proto.FromJsonBuffer(resp)
-			proto.AppendTable(t)
+			entity.FromJsonBuffer(resp)
+			entity.AppendTable(t)
 			if utils.Debug.Verbose {
-				log.Print(proto.ToString())
+				log.Print(entity.ToString())
 			} else {
 				counter += req.GetCount()
-				if counter <= proto.GetTotal() {
-					fmt.Printf("\r%s: %d/%d", proto.GetName(), counter, proto.GetTotal())
+				if counter <= entity.GetTotal() {
+					fmt.Printf("\r%s: %d/%d", entity.GetName(), counter, entity.GetTotal())
 				} else {
-					fmt.Printf("\r%s: %d/%d", proto.GetName(), proto.GetTotal(), proto.GetTotal())
+					fmt.Printf("\r%s: %d/%d", entity.GetName(), entity.GetTotal(), entity.GetTotal())
 				}
 			}
 		}
-		result[protoName] = t
+		result[entityName] = t
 	}
 
 	return result

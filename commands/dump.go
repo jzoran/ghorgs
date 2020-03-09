@@ -6,7 +6,7 @@ package commands
 import (
 	"fmt"
 	"ghorgs/cache"
-	"ghorgs/protocols"
+	"ghorgs/entities"
 )
 
 type Dump struct {
@@ -18,10 +18,10 @@ func (d *Dump) AddCache(c map[string]*cache.Table) {
 	d.data = c
 }
 
-func (d *Dump) Do(protoMap map[string]protocols.Protocol) error {
+func (d *Dump) Do(entityMap map[string]entities.Entity) error {
 	for name, t := range d.data {
-		proto := protoMap[name]
-		filename := proto.GetCsvFile()
+		entity := entityMap[name]
+		filename := entity.GetCsvFile()
 
 		fmt.Printf("\nDumping %s...", filename)
 		if d.By != "" {
@@ -31,7 +31,7 @@ func (d *Dump) Do(protoMap map[string]protocols.Protocol) error {
 			}
 		}
 		csv := &cache.Csv{filename, t}
-		csv.Flush(proto.GetTableFields())
+		csv.Flush(entity.GetTableFields())
 	}
 
 	return nil
