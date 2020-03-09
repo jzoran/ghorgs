@@ -11,15 +11,15 @@ import (
 )
 
 type Table struct {
-	Records map[string][]string
-	Keys    []string
-	Columns []string
-	sortCol int
+	Records   map[string][]string
+	Keys      []string
+	Fields    []string
+	sortField int
 }
 
-func MakeTable(columns []string) *Table {
+func MakeTable(fields []string) *Table {
 	keys := make([]string, 0)
-	return &Table{Records: nil, Keys: keys, Columns: columns}
+	return &Table{Records: nil, Keys: keys, Fields: fields}
 }
 
 func (t *Table) AddKey(key string) {
@@ -45,25 +45,25 @@ type By Table
 
 func (a By) Len() int { return len(a.Keys) }
 func (a By) Less(i, j int) bool {
-	if a.sortCol == -1 {
+	if a.sortField == -1 {
 		return a.Keys[i] < a.Keys[j]
 	}
-	return a.Records[a.Keys[i]][a.sortCol] < a.Records[a.Keys[j]][a.sortCol]
+	return a.Records[a.Keys[i]][a.sortField] < a.Records[a.Keys[j]][a.sortField]
 }
 func (a By) Swap(i, j int) {
 	a.Keys[i], a.Keys[j] = a.Keys[j], a.Keys[i]
 }
 
-func (t *Table) SortByColumn(column string) (*Table, error) {
-	t.sortCol = -1
-	for i, val := range t.Columns {
-		if val == column {
-			t.sortCol = i - 1 // Columns include "Id" at index 0
+func (t *Table) SortByField(field string) (*Table, error) {
+	t.sortField = -1
+	for i, val := range t.Fields {
+		if val == field {
+			t.sortField = i - 1 // Fields include "Id" at index 0
 			break
 		}
 	}
-	if t.sortCol == -2 {
-		return nil, errors.New(fmt.Sprintf("Invalid sort column: %s\n", column))
+	if t.sortField == -2 {
+		return nil, errors.New(fmt.Sprintf("Invalid sort field: %s\n", field))
 	}
 
 	tt := *t

@@ -25,7 +25,7 @@ func (d *Dump) Do(protoMap map[string]protocols.Protocol) error {
 
 		fmt.Printf("\nDumping %s...", filename)
 		if d.By != "" {
-			_, err := t.SortByColumn(d.By)
+			_, err := t.SortByField(d.By)
 			if err != nil {
 				panic(err)
 			}
