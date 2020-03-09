@@ -140,16 +140,17 @@ func validateProtocols() ([]string, error) {
 }
 
 func validateProtocolSortBy(activeProtos []string) error {
-	res := true
 	for _, protoName := range activeProtos {
 		proto := protoMap[protoName]
-		res = res && utils.StringInSlice(args.By, proto.GetCsvTitle())
-	}
-	if res {
-		return nil
+		if !utils.StringInSlice(args.By, proto.GetCsvTitle()) {
+			return errors.New(fmt.Sprintf("Column `%s` not found in `%s`. Choose one of: %s.\n",
+				args.By,
+				protoName,
+				strings.Join(proto.GetCsvTitle(), ", ")))
+		}
 	}
 
-	return errors.New("Sort by column not found.\n")
+	return nil
 }
 
 func keysOfMap(m map[string]protocols.Protocol) string {
