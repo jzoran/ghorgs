@@ -46,7 +46,7 @@ func init() {
 		"        Dumps the data into csv files.\n"+
 		"            -d = \"all\" for full dump or comma separated list of one or more of:\n"+
 		"                   "+keysOfMap(protoMap)+"\n"+
-		"            -b = Name of the table field to use for sorting the result of dump. "+
+		"            -b = Name of the table field to use for sorting the result of dump.\n"+
 		"                 If empty, default sort on GitHub is creation date.\n"+
 		"        Dump by time of creation is the default command.\n"+
 		"    - archive\n"+
@@ -67,7 +67,7 @@ func init() {
 		"    - comma separated list of one or more of:\n"+
 		"        "+keysOfMap(protoMap)+"\n")
 	flag.StringVar(&args.By, "b", "", "Name of the table field to use for sorting the result of dump. "+
-		" If empty, default sort on GitHub is creation date.\n")
+		"If empty, default sort on GitHub is creation date.\n")
 	flag.StringVar(&args.Token, "t", "", "Security token used on Github.\n"+
 		"  Required GitHub scopes covered by token are:\n"+
 		"    - user,\n"+
@@ -157,7 +157,7 @@ func validateProtocolSortBy(activeProtos []string) error {
 func keysOfMap(m map[string]protocols.Protocol) string {
 	var keys = ""
 	for key, _ := range m {
-		keys = keys + key + " ,"
+		keys = keys + key + ", "
 	}
 	return keys[:len(keys)-2]
 }
