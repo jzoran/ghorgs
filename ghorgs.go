@@ -46,7 +46,8 @@ func init() {
 		"        Dumps the data into csv files.\n"+
 		"            -d = \"all\" for full dump or comma separated list of one or more of:\n"+
 		"                   "+keysOfMap(protoMap)+"\n"+
-		"            -b = dump sorted by this column (default is Id).\n"+
+		"            -b = Name of the table field to use for sorting the result of dump. "+
+		"                 If empty, default sort on GitHub is creation date.\n"+
 		"        Dump by time of creation is the default command.\n"+
 		"    - archive\n"+
 		"        Removes GitHub repositories according to:\n"+
@@ -65,7 +66,7 @@ func init() {
 		"    - all = all the tables,\n"+
 		"    - comma separated list of one or more of:\n"+
 		"        "+keysOfMap(protoMap)+"\n")
-	flag.StringVar(&args.By, "b", "", "Name of the column to use for sorting the result of dump. "+
+	flag.StringVar(&args.By, "b", "", "Name of the table field to use for sorting the result of dump. "+
 		" If empty, default sort on GitHub is creation date.\n")
 	flag.StringVar(&args.Token, "t", "", "Security token used on Github.\n"+
 		"  Required GitHub scopes covered by token are:\n"+
@@ -142,11 +143,11 @@ func validateProtocols() ([]string, error) {
 func validateProtocolSortBy(activeProtos []string) error {
 	for _, protoName := range activeProtos {
 		proto := protoMap[protoName]
-		if !utils.StringInSlice(args.By, proto.GetCsvTitle()) {
-			return errors.New(fmt.Sprintf("Column `%s` not found in `%s`. Choose one of: %s.\n",
+		if !proto.HasField(args.By) {
+			return errors.New(fmt.Sprintf("Field `%s` not found in `%s`. Choose one of: %s.\n",
 				args.By,
 				protoName,
-				strings.Join(proto.GetCsvTitle(), ", ")))
+				strings.Join(proto.GetTableFields(), ", ")))
 		}
 	}
 

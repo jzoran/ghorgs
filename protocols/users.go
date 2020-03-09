@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"ghorgs/cache"
+	"ghorgs/utils"
 	"time"
 )
 
@@ -17,7 +18,7 @@ const (
 	usersName            = "users"
 )
 
-var usersCsvTitle = []string{"Id", "Login", "Name", "Admin", "2FA", "Email", "Company", " Url", "Bio", "Status", "Updated", "Repositories Contributed To"}
+var usersTableFields = []string{"Id", "Login", "Name", "Admin", "2FA", "Email", "Company", " Url", "Bio", "Status", "Updated", "Repositories Contributed To"}
 
 type UserStatus struct {
 	Message string `json:"message"`
@@ -90,7 +91,7 @@ func (r *UsersResponse) GetName() string {
 }
 
 func (r *UsersResponse) MakeTable() *cache.Table {
-	return cache.MakeTable(usersCsvTitle)
+	return cache.MakeTable(usersTableFields)
 }
 
 func (r *UsersResponse) MakeQuery(org string) IQuery {
@@ -178,8 +179,12 @@ func (r *UsersResponse) AppendTable(c *cache.Table) {
 	}
 }
 
-func (r *UsersResponse) GetCsvTitle() []string {
-	return usersCsvTitle
+func (r *UsersResponse) GetTableFields() []string {
+	return usersTableFields
+}
+
+func (r *UsersResponse) HasField(s string) bool {
+	return utils.StringInSlice(s, usersTableFields)
 }
 
 func (r *UsersResponse) GetCsvFile() string {

@@ -13,11 +13,11 @@ type Protocol interface {
 
 	MakeTable() *cache.Table
 	AppendTable(c *cache.Table)
+	GetTableFields() []string
+	HasField(s string) bool
 	GetCsvFile() string
-	GetCsvTitle() []string
 
 	MakeQuery(org string) IQuery
-
 	FromJsonBuffer(buff []byte)
 	GetTotal() int
 	HasNext() bool

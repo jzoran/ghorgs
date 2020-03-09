@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"ghorgs/cache"
+	"ghorgs/utils"
 	"time"
 )
 
@@ -17,7 +18,7 @@ const (
 	reposName            = "repos"
 )
 
-var reposCsvTitle = []string{"Id", "Name", "Type", "Url", "DiskUsage (kB)", "Updated", "Last Push"}
+var reposTableFields = []string{"Id", "Name", "Type", "Url", "DiskUsage (kB)", "Updated", "Last Push"}
 
 type Repository struct {
 	Id        string    `json:"id"`
@@ -73,7 +74,7 @@ func (r *ReposResponse) GetName() string {
 }
 
 func (r *ReposResponse) MakeTable() *cache.Table {
-	return cache.MakeTable(reposCsvTitle)
+	return cache.MakeTable(reposTableFields)
 }
 
 func (r *ReposResponse) MakeQuery(org string) IQuery {
@@ -128,8 +129,12 @@ func (r *ReposResponse) AppendTable(c *cache.Table) {
 	}
 }
 
-func (r *ReposResponse) GetCsvTitle() []string {
-	return reposCsvTitle
+func (r *ReposResponse) GetTableFields() []string {
+	return reposTableFields
+}
+
+func (r *ReposResponse) HasField(s string) bool {
+	return utils.StringInSlice(s, reposTableFields)
 }
 
 func (r *ReposResponse) GetCsvFile() string {

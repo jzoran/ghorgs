@@ -31,7 +31,7 @@ func (d *Dump) Do(protoMap map[string]protocols.Protocol) error {
 			}
 		}
 		csv := &cache.Csv{filename, t}
-		csv.Flush(proto.GetCsvTitle())
+		csv.Flush(proto.GetTableFields())
 	}
 
 	return nil
