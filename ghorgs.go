@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"ghorgs/commands"
 	"ghorgs/entities"
+	"ghorgs/gnet"
 	"ghorgs/utils"
 	"log"
 	"os"
@@ -68,7 +69,7 @@ func init() {
 		"        "+keysOfMap(entityMap)+"\n")
 	flag.StringVar(&args.By, "b", "", "Name of the table field to use for sorting the result of dump. "+
 		"If empty, default sort on GitHub is creation date.\n")
-	flag.StringVar(&args.Token, "t", "", "Security token used on Github.\n"+
+	flag.StringVar(&args.Token, "t", gnet.Conf.Token, "Security token used on Github.\n"+
 		"  Required GitHub scopes covered by token are:\n"+
 		"    - user,\n"+
 		"    - public_repo,\n"+
@@ -79,8 +80,14 @@ func init() {
 		"    - read:org,\n"+
 		"    - read:public_key,\n"+
 		"    - read:gpg_key")
-	flag.StringVar(&args.Organization, "o", "", "Organizational account being analyzed.")
+	flag.StringVar(&args.Organization, "o", gnet.Conf.Organization, "Organizational account being analyzed.")
 	flag.Parse()
+
+	// command line params trump config file
+	gnet.Conf.Token = args.Token
+	gnet.Conf.Organization = args.Organization
+
+	// set debug/log
 	utils.Debug.Verbose = args.Verbose
 	log.SetOutput(os.Stdout)
 }
