@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package commands
+package cmd
 
 import (
 	"fmt"
@@ -20,8 +20,15 @@ func Cache(request []string, using map[string]entities.Entity) map[string]*cache
 
 		t := entity.MakeTable()
 		req := entity.MakeQuery(gnet.Conf.Organization)
+		if utils.Debug.Verbose {
+			log.Print(req)
+		}
+
 		gitHubRequest := gnet.MakeGitHubRequest(req.GetGraphQlJson(), gnet.Conf.Token)
 		resp := gitHubRequest.Fetch()
+		if utils.Debug.Verbose {
+			log.Print(resp)
+		}
 
 		entity.FromJsonBuffer(resp)
 		entity.AppendTable(t)
