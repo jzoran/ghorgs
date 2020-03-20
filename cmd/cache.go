@@ -64,6 +64,9 @@ func Cache(request []string, using map[string]entities.Entity) map[string]*cache
 			}
 		}
 		result[entityName] = t
+		if !utils.Debug.Verbose {
+			fmt.Printf("\n")
+		}
 	}
 
 	return result
