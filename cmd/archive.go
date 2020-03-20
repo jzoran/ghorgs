@@ -6,8 +6,10 @@ package cmd
 import (
 	"fmt"
 	"ghorgs/cache"
-	//	"ghorgs/entities"
+	"ghorgs/entities"
+	"ghorgs/utils"
 	cmds "github.com/spf13/cobra"
+	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -145,4 +147,91 @@ func (a *archiveT) validateArgs(c *cmds.Command, args []string) error {
 
 func (a *archiveT) run(c *cmds.Command, args []string) {
 	fmt.Println("TODO: implement archive...")
+
+	// 0. get cache for repos
+	a.addCache(Cache([]string{"repos"}, entities.EntityMap))
+
+	// 2. if --repos set, get cache projection to --repos,
+	var projection *cache.Table
+	var err error
+	if a.names != nil {
+		projection, err = dataProjectionByName()
+		if err != nil && projection == nil {
+			fmt.Println(err.Error())
+			return
+		}
+	} else {
+		projection = a.data["repos"]
+	}
+
+	// 1. sort by `last updated`
+	_, err = projection.SortByField("Updated")
+	if err != nil {
+		panic(err)
+	}
+
+	if a.n > 0 {
+		// if --n set, get copy of cache with --n least active
+		projection, err = projection.Last(a.n)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	// 3. get copy of cache cut by --since flag
+	if a.since != "" {
+		projection, err = projection.GreaterThanByField("Updated", a.since)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	// 4. display the result to the user and request confirmation
+	fmt.Println("\nThe following repositories will be removed from GitHub and archived:")
+	fmt.Println(fmt.Sprintf("%s\n", projection.ToString()))
+	// 5. iterate over result to:
+	//   5.0 git clone from url into -O
+	//   5.1 tar.gz the clone in -O
+	//   5.2 compare tar -tvf with clone (compare size?)
+	//   5.3 rm clone in -O
+	//   5.4 rm repo in GitHub
+}
+
+func dataProjectionByName() (*cache.Table, error) {
+	reposEntity := entities.EntityMap["repos"]
+	projection := cache.MakeTable(reposEntity.GetTableFields())
+	_, err := a.data["repos"].SortByField("Name")
+	if err != nil {
+		panic(err)
+	}
+
+	// find all a.names in the a.data set and add to projection
+	ok := false
+	for _, name := range a.names {
+		t, err := a.data["repos"].FindByField("Name", name)
+		if err == nil {
+			ok = true
+			key := t.Keys[0]
+			record := t.Records[key]
+
+			projection.AddKey(key)
+			projection.AddRecord(key, record)
+		} else {
+			if utils.Debug.Verbose {
+				log.Println(err.Error())
+			}
+			fmt.Println(fmt.Sprintf("`%s` not found in GitHub repositories.", name))
+		}
+	}
+	if ok {
+		return projection, nil
+	}
+
+	if len(projection.Keys) == 0 {
+		// no requested repo was found
+		return nil, fmt.Errorf("Errors found!")
+	}
+
+	// there were some repos found and some not
+	return projection, fmt.Errorf("Errors found!")
 }
