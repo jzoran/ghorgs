@@ -26,6 +26,13 @@ func (t *Table) AddKey(key string) {
 	t.Keys = append(t.Keys, key)
 }
 
+func (t *Table) AddRecord(key string, record []string) {
+	if t.Records == nil {
+		t.Records = make(map[string][]string)
+	}
+	t.Records[key] = record
+}
+
 func (t *Table) ToString() string {
 	var s string
 	for id, key := range t.Keys {
@@ -64,7 +71,7 @@ func (a By) Swap(i, j int) {
 }
 
 func (t *Table) SortByField(field string) (*Table, error) {
-	t.sortField = -1
+	t.sortField = -2
 	for i, val := range t.Fields {
 		if val == field {
 			t.sortField = i - 1 // Fields include "Id" at index 0
@@ -79,3 +86,108 @@ func (t *Table) SortByField(field string) (*Table, error) {
 	sort.Sort(By(tt))
 	return &tt, nil
 }
+
+func (t *Table) FindByField(field string, val string) (*Table, error) {
+	t.sortField = -2
+	for i, val := range t.Fields {
+		if val == field {
+			t.sortField = i - 1 // Fields include "Id" at index 0
+			break
+		}
+	}
+	if t.sortField == -2 {
+		return nil, errors.New(fmt.Sprintf("Invalid search field: %s\n", field))
+	}
+
+	keyI := sort.Search(len(t.Keys), func(i int) bool {
+		return val <= t.Records[t.Keys[i]][t.sortField]
+	})
+
+	if keyI < len(t.Keys) && val == t.Records[t.Keys[keyI]][t.sortField] {
+		key := t.Keys[keyI]
+		keys := []string{key}
+		ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
+		ret.AddRecord(key, t.Records[key])
+		return ret, nil
+	}
+
+	return nil, fmt.Errorf("%s not found in field %s.", val, field)
+}
+
+// func (t *Table) LessThanByField(field string, val string) (*Table, error) {
+// 	t.sortField = -2
+// 	for i, val := range t.Fields {
+// 		if val == field {
+// 			t.sortField = i - 1 // Fields include "Id" at index 0
+// 			break
+// 		}
+// 	}
+// 	if t.sortField == -2 {
+// 		return nil, errors.New(fmt.Sprintf("Invalid search field: %s\n", field))
+// 	}
+
+// 	keys := make([]string, 0)
+// 	ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
+// 	for _, key := range t.Keys {
+// 		if t.Records[key][t.sortField] < val {
+// 			ret.AddKey(key)
+// 			ret.AddRecord(key, t.Records[key])
+// 		}
+// 	}
+
+// 	return ret, nil
+// }
+
+func (t *Table) GreaterThanByField(field string, val string) (*Table, error) {
+	t.sortField = -2
+	for i, val := range t.Fields {
+		if val == field {
+			t.sortField = i - 1 // Fields include "Id" at index 0
+			break
+		}
+	}
+	if t.sortField == -2 {
+		return nil, errors.New(fmt.Sprintf("Invalid search field: %s\n", field))
+	}
+
+	keys := make([]string, 0)
+	ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
+	for _, key := range t.Keys {
+		if t.Records[key][t.sortField] > val {
+			ret.AddKey(key)
+			ret.AddRecord(key, t.Records[key])
+		}
+	}
+
+	return ret, nil
+}
+
+func (t *Table) Last(n int) (*Table, error) {
+	if n < 1 || n > len(t.Keys) {
+		return nil, fmt.Errorf("Out of range error.")
+	}
+
+	keys := make([]string, 0)
+	ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
+	for _, key := range t.Keys[len(t.Keys)-n:] {
+		ret.AddKey(key)
+		ret.AddRecord(key, t.Records[key])
+	}
+
+	return ret, nil
+}
+
+// func (t *Table) First(n int) (*Table, error) {
+// 	if n <= 0 || n > len(t.Keys) {
+// 		return nil, fmt.Errorf("Out of range error.")
+// 	}
+
+// 	keys := make([]string, 0)
+// 	ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
+// 	for _, key := range t.Keys[:len(t.Keys)-n] {
+// 		ret.AddKey(key)
+// 		ret.AddRecord(key, t.Records[key])
+// 	}
+
+// 	return ret, nil
+// }
