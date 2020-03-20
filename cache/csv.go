@@ -64,5 +64,5 @@ func lineToString(line []string) string {
 }
 
 func (c *Csv) Log() {
-	c.Data.log()
+	c.Data.Log()
 }

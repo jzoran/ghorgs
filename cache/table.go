@@ -26,18 +26,27 @@ func (t *Table) AddKey(key string) {
 	t.Keys = append(t.Keys, key)
 }
 
-func (t *Table) log() {
+func (t *Table) ToString() string {
 	var s string
-	for id, line := range t.Records {
-		s = id + "\t"
+	for id, key := range t.Keys {
+		s += key + "\t"
+		line := t.Records[key]
 		for i, cell := range line {
-			s = s + cell
+			s += cell
 			if i < len(line)-1 {
-				s = s + "\t"
+				s += "\t"
 			}
 		}
-		log.Print(s + "\n")
+		if id < len(t.Keys)-1 {
+			s += "\n"
+		}
 	}
+
+	return s
+}
+
+func (t *Table) Log() {
+	log.Print(t.ToString() + "\n")
 }
 
 // sort interface + method
