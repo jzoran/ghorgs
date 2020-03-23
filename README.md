@@ -42,21 +42,19 @@ an organization and then writes the output into a csv files.
 ```
 
 ### Dependencies
-The only external dependency for now is to yaml.v3.
-Run `go get gopkg.in/yaml.v3` to make sure it's downloaded.
+Current dependencies are to `cobra` (https://github.com/spf13/cobra) and
+`viper` (https://github.com/spf13/viper).
+Make sure you run:
+`go get github.com/spf13/cobra` and `go get github.com/spf13/viper`
+respectively to get the dependcies.
+Also, upon modification of module, re-init the module
+with `go mod init`, which will recreate the go.mod and go.sum files.
 
 ## Build
 `go install`
 
 ## Run
-`ghorgs [-h] [-v] [-t Token] [-o Organization]`
-
-where:
-
-* h = prints help
-* v = enables verbose prints to stdout
-* t = overrides config token
-* o = overrides config organization
+Run `ghorgs` for the latest documentation on how to use the tool.
 
 ## LICENSE
 Currently the tool is proprietary.
