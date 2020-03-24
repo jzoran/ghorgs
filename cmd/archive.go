@@ -5,8 +5,7 @@ package cmd
 
 import (
 	"fmt"
-	"ghorgs/cache"
-	"ghorgs/entities"
+	"ghorgs/model"
 	"ghorgs/utils"
 	cmds "github.com/spf13/cobra"
 	"log"
@@ -20,7 +19,7 @@ type archiveT struct {
 	since     string
 	names     []string
 	outFolder string
-	data      map[string]*cache.Table
+	data      map[string]*model.Table
 }
 
 var a = &archiveT{}
@@ -79,7 +78,7 @@ NOTE: --n will be ignored if used with --repos.
 
 }
 
-func (a *archiveT) addCache(c map[string]*cache.Table) {
+func (a *archiveT) addCache(c map[string]*model.Table) {
 	a.data = c
 }
 
@@ -149,10 +148,10 @@ func (a *archiveT) run(c *cmds.Command, args []string) {
 	fmt.Println("TODO: implement archive...")
 
 	// 0. get cache for repos
-	a.addCache(Cache([]string{"repos"}, entities.EntityMap))
+	a.addCache(Cache([]string{"repos"}, model.EntityMap))
 
 	// 2. if --repos set, get cache projection to --repos,
-	var projection *cache.Table
+	var projection *model.Table
 	var err error
 	if a.names != nil {
 		projection, err = dataProjectionByName()
@@ -197,9 +196,9 @@ func (a *archiveT) run(c *cmds.Command, args []string) {
 	//   5.4 rm repo in GitHub
 }
 
-func dataProjectionByName() (*cache.Table, error) {
-	reposEntity := entities.EntityMap["repos"]
-	projection := cache.MakeTable(reposEntity.GetTableFields())
+func dataProjectionByName() (*model.Table, error) {
+	reposEntity := model.EntityMap["repos"]
+	projection := model.MakeTable(reposEntity.GetTableFields())
 	_, err := a.data["repos"].SortByField("Name")
 	if err != nil {
 		panic(err)

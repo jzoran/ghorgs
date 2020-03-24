@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package entities
+package model
 
 import (
 	"fmt"

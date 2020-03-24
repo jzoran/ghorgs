@@ -1,12 +1,11 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package cache
+package model
 
 import (
 	"errors"
 	"fmt"
-	"ghorgs/fields"
 	"log"
 	"sort"
 )
@@ -14,17 +13,17 @@ import (
 type Table struct {
 	Records    map[string][]string
 	Keys       []string
-	Fields     []fields.Field
-	pivotField fields.Field
+	Fields     []Field
+	pivotField Field
 }
 
-func MakeTable(fields []fields.Field) *Table {
+func MakeTable(fields []Field) *Table {
 	keys := make([]string, 0)
 	return &Table{Records: nil, Keys: keys, Fields: fields}
 }
 
 func (t *Table) FieldNames() []string {
-	return fields.NamesOf(t.Fields)
+	return namesOf(t.Fields)
 }
 
 func (t *Table) AddKey(key string) {
@@ -66,7 +65,7 @@ type By Table
 
 func (a By) Len() int { return len(a.Keys) }
 func (a By) Less(i, j int) bool {
-	if a.pivotField.Index == fields.ID.Index {
+	if a.pivotField.Index == ID.Index {
 		return a.Keys[i] < a.Keys[j]
 	}
 	return a.Records[a.Keys[i]][a.pivotField.Index] < a.Records[a.Keys[j]][a.pivotField.Index]
@@ -174,12 +173,12 @@ func (t *Table) Last(n int) (*Table, error) {
 // }
 
 func (t *Table) setPivotField(fieldName string) error {
-	if fieldName == fields.ID.Name {
-		t.pivotField = fields.ID
+	if fieldName == ID.Name {
+		t.pivotField = ID
 		return nil
 	}
 
-	t.pivotField = fields.INVALID_FIELD
+	t.pivotField = INVALID_FIELD
 	for _, field := range t.Fields {
 		if field.Name == fieldName {
 			t.pivotField = field
@@ -187,7 +186,7 @@ func (t *Table) setPivotField(fieldName string) error {
 		}
 	}
 
-	if t.pivotField == fields.INVALID_FIELD {
+	if t.pivotField == INVALID_FIELD {
 		return errors.New(fmt.Sprintf("Invalid search field: %s\n", fieldName))
 	}
 

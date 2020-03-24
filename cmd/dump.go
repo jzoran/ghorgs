@@ -5,15 +5,15 @@ package cmd
 
 import (
 	"fmt"
-	"ghorgs/cache"
-	"ghorgs/entities"
+	"ghorgs/model"
+	"ghorgs/view"
 	cmds "github.com/spf13/cobra"
 )
 
 type dumpT struct {
 	entities []string
 	by       string
-	data     map[string]*cache.Table
+	data     map[string]*model.Table
 }
 
 var d = &dumpT{}
@@ -31,7 +31,7 @@ func init() {
 		"e",
 		"all",
 		"'all' for full dump or comma separated list of one or more of:\n"+
-			"    "+sliceToStr(entities.EntityList)+".")
+			"    "+sliceToStr(model.EntityList)+".")
 
 	dumpCmd.Flags().StringP("by",
 		"b",
@@ -42,7 +42,7 @@ func init() {
 	rootCmd.AddCommand(dumpCmd)
 }
 
-func (d *dumpT) addCache(c map[string]*cache.Table) {
+func (d *dumpT) addCache(c map[string]*model.Table) {
 	d.data = c
 }
 
@@ -51,7 +51,7 @@ func (d *dumpT) validateArgs(c *cmds.Command, args []string) error {
 	if err != nil {
 		panic(err)
 	}
-	d.entities, err = entities.ValidateEntities(ents)
+	d.entities, err = model.ValidateEntities(ents)
 	if err != nil {
 		return err
 	}
@@ -60,7 +60,7 @@ func (d *dumpT) validateArgs(c *cmds.Command, args []string) error {
 	if err != nil {
 		panic(err)
 	}
-	err = entities.ValidateEntityField(d.by, d.entities)
+	err = model.ValidateEntityField(d.by, d.entities)
 	if err != nil {
 		return err
 	}
@@ -69,9 +69,9 @@ func (d *dumpT) validateArgs(c *cmds.Command, args []string) error {
 }
 
 func (d *dumpT) run(c *cmds.Command, args []string) {
-	d.addCache(Cache(d.entities, entities.EntityMap))
+	d.addCache(Cache(d.entities, model.EntityMap))
 	for name, t := range d.data {
-		entity := entities.EntityMap[name]
+		entity := model.EntityMap[name]
 		filename := entity.GetCsvFile()
 
 		fmt.Printf("\nDumping %s...", filename)
@@ -81,7 +81,7 @@ func (d *dumpT) run(c *cmds.Command, args []string) {
 				panic(err)
 			}
 		}
-		csv := &cache.Csv{filename, t}
+		csv := &view.Csv{filename, t}
 		csv.Flush()
 	}
 }

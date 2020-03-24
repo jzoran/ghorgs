@@ -1,13 +1,11 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package entities
+package model
 
 import (
 	"encoding/json"
 	"fmt"
-	"ghorgs/cache"
-	"ghorgs/fields"
 	"ghorgs/utils"
 	"time"
 )
@@ -20,15 +18,15 @@ const (
 )
 
 var (
-	reposTableFields = []fields.Field{
-		//&fields.Field{"Id", -1} // default for table as key for map of Records
-		fields.Field{"Name", 0},
-		fields.Field{"Type", 1},
-		fields.Field{"Url", 2},
-		fields.Field{"DiskUsage (kB)", 3},
-		fields.Field{"Updated", 4},
-		fields.Field{"Last Push", 5}}
-	reposTableFieldNames = fields.NamesOf(reposTableFields)
+	reposTableFields = []Field{
+		//&Field{"Id", -1} // default for table as key for map of Records
+		Field{"Name", 0},
+		Field{"Type", 1},
+		Field{"Url", 2},
+		Field{"DiskUsage (kB)", 3},
+		Field{"Updated", 4},
+		Field{"Last Push", 5}}
+	reposTableFieldNames = namesOf(reposTableFields)
 )
 
 type Repository struct {
@@ -84,8 +82,8 @@ func (r *ReposResponse) GetName() string {
 	return reposName
 }
 
-func (r *ReposResponse) MakeTable() *cache.Table {
-	return cache.MakeTable(reposTableFields)
+func (r *ReposResponse) MakeTable() *Table {
+	return MakeTable(reposTableFields)
 }
 
 func (r *ReposResponse) MakeQuery(org string) IQuery {
@@ -120,7 +118,7 @@ func (r *ReposResponse) ToString() string {
 	return string(s)
 }
 
-func (r *ReposResponse) AppendTable(c *cache.Table) {
+func (r *ReposResponse) AppendTable(c *Table) {
 	if c.Records == nil {
 		c.Records = make(map[string][]string)
 	}
@@ -140,7 +138,7 @@ func (r *ReposResponse) AppendTable(c *cache.Table) {
 	}
 }
 
-func (r *ReposResponse) GetTableFields() []fields.Field {
+func (r *ReposResponse) GetTableFields() []Field {
 	return reposTableFields
 }
 

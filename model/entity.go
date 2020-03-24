@@ -1,13 +1,11 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package entities
+package model
 
 import (
 	"errors"
 	"fmt"
-	"ghorgs/cache"
-	"ghorgs/fields"
 	"strings"
 )
 
@@ -17,9 +15,9 @@ import (
 type Entity interface {
 	GetName() string
 
-	MakeTable() *cache.Table
-	AppendTable(c *cache.Table)
-	GetTableFields() []fields.Field
+	MakeTable() *Table
+	AppendTable(c *Table)
+	GetTableFields() []Field
 	GetTableFieldNames() []string
 	HasField(s string) bool
 	GetCsvFile() string
@@ -79,7 +77,7 @@ func ValidateEntities(e string) ([]string, error) {
 // Check that a given field exists in the list
 // of active entities ActiveEntities.
 func ValidateEntityField(field string, activeEntities []string) error {
-	if field == "" || field == fields.ID.Name {
+	if field == "" || field == ID.Name {
 		return nil
 	}
 

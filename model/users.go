@@ -1,13 +1,11 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package entities
+package model
 
 import (
 	"encoding/json"
 	"fmt"
-	"ghorgs/cache"
-	"ghorgs/fields"
 	"ghorgs/utils"
 	"time"
 )
@@ -20,20 +18,20 @@ const (
 )
 
 var (
-	usersTableFields = []fields.Field{
-		//&fields.Field{"Id", -1}, // default for table as key for map of Records
-		fields.Field{"Login", 0},
-		fields.Field{"Name", 1},
-		fields.Field{"Admin", 2},
-		fields.Field{"2FA", 3},
-		fields.Field{"Email", 4},
-		fields.Field{"Company", 5},
-		fields.Field{"Url", 6},
-		fields.Field{"Bio", 7},
-		fields.Field{"Status", 8},
-		fields.Field{"Updated", 9},
-		fields.Field{"Repositories Contributed To", 10}}
-	usersTableFieldNames = fields.NamesOf(usersTableFields)
+	usersTableFields = []Field{
+		//&Field{"Id", -1}, // default for table as key for map of Records
+		Field{"Login", 0},
+		Field{"Name", 1},
+		Field{"Admin", 2},
+		Field{"2FA", 3},
+		Field{"Email", 4},
+		Field{"Company", 5},
+		Field{"Url", 6},
+		Field{"Bio", 7},
+		Field{"Status", 8},
+		Field{"Updated", 9},
+		Field{"Repositories Contributed To", 10}}
+	usersTableFieldNames = namesOf(usersTableFields)
 )
 
 type UserStatus struct {
@@ -106,8 +104,8 @@ func (r *UsersResponse) GetName() string {
 	return usersName
 }
 
-func (r *UsersResponse) MakeTable() *cache.Table {
-	return cache.MakeTable(usersTableFields)
+func (r *UsersResponse) MakeTable() *Table {
+	return MakeTable(usersTableFields)
 }
 
 func (r *UsersResponse) MakeQuery(org string) IQuery {
@@ -142,7 +140,7 @@ func (r *UsersResponse) ToString() string {
 	return string(s)
 }
 
-func (r *UsersResponse) AppendTable(c *cache.Table) {
+func (r *UsersResponse) AppendTable(c *Table) {
 	if c.Records == nil {
 		c.Records = make(map[string][]string)
 		c.Keys = make([]string, 0)
@@ -195,7 +193,7 @@ func (r *UsersResponse) AppendTable(c *cache.Table) {
 	}
 }
 
-func (r *UsersResponse) GetTableFields() []fields.Field {
+func (r *UsersResponse) GetTableFields() []Field {
 	return usersTableFields
 }
 

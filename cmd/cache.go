@@ -5,15 +5,14 @@ package cmd
 
 import (
 	"fmt"
-	"ghorgs/cache"
-	"ghorgs/entities"
 	"ghorgs/gnet"
+	"ghorgs/model"
 	"ghorgs/utils"
 	"log"
 )
 
-func Cache(request []string, using map[string]entities.Entity) map[string]*cache.Table {
-	result := make(map[string]*cache.Table, len(request))
+func Cache(request []string, using map[string]model.Entity) map[string]*model.Table {
+	result := make(map[string]*model.Table, len(request))
 	for _, entityName := range request {
 		entity := using[entityName]
 		fmt.Printf("\nCaching %s...", entityName)

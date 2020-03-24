@@ -1,21 +1,21 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package cache
+package view
 
 import (
-	"ghorgs/fields"
+	"ghorgs/model"
 	"os"
 	"reflect"
 )
 
 type Csv struct {
 	FileName string
-	Data     *Table
+	Data     *model.Table
 }
 
 func MakeCsv(filename string) *Csv {
-	data := MakeTable([]fields.Field{})
+	data := model.MakeTable([]model.Field{})
 	return &Csv{filename, data}
 }
 

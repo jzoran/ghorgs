@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Sony Mobile Communications Inc.
 // All rights reserved.
 
-package fields
+package model
 
 type Field struct {
 	Name  string
@@ -20,7 +20,7 @@ var (
 	ID            Field = Field{"Id", -1}
 )
 
-func NamesOf(fields []Field) []string {
+func namesOf(fields []Field) []string {
 	names := make([]string, 0)
 	names = append(names, ID.Name)
 	for _, field := range fields {

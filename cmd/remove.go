@@ -5,8 +5,7 @@ package cmd
 
 import (
 	"fmt"
-	"ghorgs/cache"
-	//	"ghorgs/entities"
+	"ghorgs/model"
 	cmds "github.com/spf13/cobra"
 )
 
@@ -14,7 +13,7 @@ type removeT struct {
 	n     int
 	since string
 	names string
-	data  map[string]*cache.Table
+	data  map[string]*model.Table
 }
 
 var r = &removeT{}
@@ -47,7 +46,7 @@ func init() {
 
 }
 
-func (r *removeT) addCache(c map[string]*cache.Table) {
+func (r *removeT) addCache(c map[string]*model.Table) {
 	r.data = c
 }
 
