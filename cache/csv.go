@@ -4,6 +4,7 @@
 package cache
 
 import (
+	"ghorgs/fields"
 	"os"
 	"reflect"
 )
@@ -14,11 +15,11 @@ type Csv struct {
 }
 
 func MakeCsv(filename string) *Csv {
-	data := MakeTable([]string{})
+	data := MakeTable([]fields.Field{})
 	return &Csv{filename, data}
 }
 
-func (c *Csv) Flush(title []string) {
+func (c *Csv) Flush() {
 	var f *os.File
 
 	if _, err := os.Stat(c.FileName); err == nil || os.IsNotExist(err) {
@@ -32,6 +33,7 @@ func (c *Csv) Flush(title []string) {
 		panic(err)
 	}
 
+	title := c.Data.FieldNames()
 	s := lineToString(title)
 	if _, err := f.WriteString(s + "\n"); err != nil {
 		panic(err)

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"ghorgs/cache"
+	"ghorgs/fields"
 	"ghorgs/utils"
 	"time"
 )
@@ -18,7 +19,17 @@ const (
 	reposName            = "repos"
 )
 
-var reposTableFields = []string{"Id", "Name", "Type", "Url", "DiskUsage (kB)", "Updated", "Last Push"}
+var (
+	reposTableFields = []fields.Field{
+		//&fields.Field{"Id", -1} // default for table as key for map of Records
+		fields.Field{"Name", 0},
+		fields.Field{"Type", 1},
+		fields.Field{"Url", 2},
+		fields.Field{"DiskUsage (kB)", 3},
+		fields.Field{"Updated", 4},
+		fields.Field{"Last Push", 5}}
+	reposTableFieldNames = fields.NamesOf(reposTableFields)
+)
 
 type Repository struct {
 	Id        string    `json:"id"`
@@ -129,12 +140,16 @@ func (r *ReposResponse) AppendTable(c *cache.Table) {
 	}
 }
 
-func (r *ReposResponse) GetTableFields() []string {
+func (r *ReposResponse) GetTableFields() []fields.Field {
 	return reposTableFields
 }
 
+func (r *ReposResponse) GetTableFieldNames() []string {
+	return reposTableFieldNames
+}
+
 func (r *ReposResponse) HasField(s string) bool {
-	return utils.StringInSlice(s, reposTableFields)
+	return utils.StringInSlice(s, reposTableFieldNames)
 }
 
 func (r *ReposResponse) GetCsvFile() string {

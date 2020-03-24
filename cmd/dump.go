@@ -82,7 +82,7 @@ func (d *dumpT) run(c *cmds.Command, args []string) {
 			}
 		}
 		csv := &cache.Csv{filename, t}
-		csv.Flush(entity.GetTableFields())
+		csv.Flush()
 	}
 }
 

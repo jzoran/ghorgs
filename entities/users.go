@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"ghorgs/cache"
+	"ghorgs/fields"
 	"ghorgs/utils"
 	"time"
 )
@@ -18,7 +19,22 @@ const (
 	usersName            = "users"
 )
 
-var usersTableFields = []string{"Id", "Login", "Name", "Admin", "2FA", "Email", "Company", " Url", "Bio", "Status", "Updated", "Repositories Contributed To"}
+var (
+	usersTableFields = []fields.Field{
+		//&fields.Field{"Id", -1}, // default for table as key for map of Records
+		fields.Field{"Login", 0},
+		fields.Field{"Name", 1},
+		fields.Field{"Admin", 2},
+		fields.Field{"2FA", 3},
+		fields.Field{"Email", 4},
+		fields.Field{"Company", 5},
+		fields.Field{"Url", 6},
+		fields.Field{"Bio", 7},
+		fields.Field{"Status", 8},
+		fields.Field{"Updated", 9},
+		fields.Field{"Repositories Contributed To", 10}}
+	usersTableFieldNames = fields.NamesOf(usersTableFields)
+)
 
 type UserStatus struct {
 	Message string `json:"message"`
@@ -179,12 +195,16 @@ func (r *UsersResponse) AppendTable(c *cache.Table) {
 	}
 }
 
-func (r *UsersResponse) GetTableFields() []string {
+func (r *UsersResponse) GetTableFields() []fields.Field {
 	return usersTableFields
 }
 
+func (r *UsersResponse) GetTableFieldNames() []string {
+	return usersTableFieldNames
+}
+
 func (r *UsersResponse) HasField(s string) bool {
-	return utils.StringInSlice(s, usersTableFields)
+	return utils.StringInSlice(s, usersTableFieldNames)
 }
 
 func (r *UsersResponse) GetCsvFile() string {

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"ghorgs/cache"
+	"ghorgs/fields"
 	"strings"
 )
 
@@ -18,7 +19,8 @@ type Entity interface {
 
 	MakeTable() *cache.Table
 	AppendTable(c *cache.Table)
-	GetTableFields() []string
+	GetTableFields() []fields.Field
+	GetTableFieldNames() []string
 	HasField(s string) bool
 	GetCsvFile() string
 
@@ -77,7 +79,7 @@ func ValidateEntities(e string) ([]string, error) {
 // Check that a given field exists in the list
 // of active entities ActiveEntities.
 func ValidateEntityField(field string, activeEntities []string) error {
-	if field == "" {
+	if field == "" || field == fields.ID.Name {
 		return nil
 	}
 
@@ -87,7 +89,7 @@ func ValidateEntityField(field string, activeEntities []string) error {
 			return errors.New(fmt.Sprintf("Field `%s` not found in `%s`. Choose one of: %s.\n",
 				field,
 				entityName,
-				strings.Join(entity.GetTableFields(), ", ")))
+				strings.Join(entity.GetTableFieldNames(), ", ")))
 		}
 	}
 

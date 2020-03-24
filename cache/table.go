@@ -6,20 +6,25 @@ package cache
 import (
 	"errors"
 	"fmt"
+	"ghorgs/fields"
 	"log"
 	"sort"
 )
 
 type Table struct {
-	Records   map[string][]string
-	Keys      []string
-	Fields    []string
-	sortField int
+	Records    map[string][]string
+	Keys       []string
+	Fields     []fields.Field
+	pivotField fields.Field
 }
 
-func MakeTable(fields []string) *Table {
+func MakeTable(fields []fields.Field) *Table {
 	keys := make([]string, 0)
 	return &Table{Records: nil, Keys: keys, Fields: fields}
+}
+
+func (t *Table) FieldNames() []string {
+	return fields.NamesOf(t.Fields)
 }
 
 func (t *Table) AddKey(key string) {
@@ -61,25 +66,19 @@ type By Table
 
 func (a By) Len() int { return len(a.Keys) }
 func (a By) Less(i, j int) bool {
-	if a.sortField == -1 {
+	if a.pivotField.Index == fields.ID.Index {
 		return a.Keys[i] < a.Keys[j]
 	}
-	return a.Records[a.Keys[i]][a.sortField] < a.Records[a.Keys[j]][a.sortField]
+	return a.Records[a.Keys[i]][a.pivotField.Index] < a.Records[a.Keys[j]][a.pivotField.Index]
 }
 func (a By) Swap(i, j int) {
 	a.Keys[i], a.Keys[j] = a.Keys[j], a.Keys[i]
 }
 
 func (t *Table) SortByField(field string) (*Table, error) {
-	t.sortField = -2
-	for i, val := range t.Fields {
-		if val == field {
-			t.sortField = i - 1 // Fields include "Id" at index 0
-			break
-		}
-	}
-	if t.sortField == -2 {
-		return nil, errors.New(fmt.Sprintf("Invalid sort field: %s\n", field))
+	err := t.setPivotField(field)
+	if err != nil {
+		return nil, err
 	}
 
 	tt := *t
@@ -88,22 +87,16 @@ func (t *Table) SortByField(field string) (*Table, error) {
 }
 
 func (t *Table) FindByField(field string, val string) (*Table, error) {
-	t.sortField = -2
-	for i, val := range t.Fields {
-		if val == field {
-			t.sortField = i - 1 // Fields include "Id" at index 0
-			break
-		}
-	}
-	if t.sortField == -2 {
-		return nil, errors.New(fmt.Sprintf("Invalid search field: %s\n", field))
+	err := t.setPivotField(field)
+	if err != nil {
+		return nil, err
 	}
 
 	keyI := sort.Search(len(t.Keys), func(i int) bool {
-		return val <= t.Records[t.Keys[i]][t.sortField]
+		return val <= t.Records[t.Keys[i]][t.pivotField.Index]
 	})
 
-	if keyI < len(t.Keys) && val == t.Records[t.Keys[keyI]][t.sortField] {
+	if keyI < len(t.Keys) && val == t.Records[t.Keys[keyI]][t.pivotField.Index] {
 		key := t.Keys[keyI]
 		keys := []string{key}
 		ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
@@ -115,21 +108,15 @@ func (t *Table) FindByField(field string, val string) (*Table, error) {
 }
 
 // func (t *Table) LessThanByField(field string, val string) (*Table, error) {
-// 	t.sortField = -2
-// 	for i, val := range t.Fields {
-// 		if val == field {
-// 			t.sortField = i - 1 // Fields include "Id" at index 0
-// 			break
-// 		}
-// 	}
-// 	if t.sortField == -2 {
-// 		return nil, errors.New(fmt.Sprintf("Invalid search field: %s\n", field))
-// 	}
-
+// 	err := t.setPivotField(field)
+//  if err != nil {
+//      return nil, err
+//  }
+//
 // 	keys := make([]string, 0)
 // 	ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
 // 	for _, key := range t.Keys {
-// 		if t.Records[key][t.sortField] < val {
+// 		if t.Records[key][t.pivotField.Index] < val {
 // 			ret.AddKey(key)
 // 			ret.AddRecord(key, t.Records[key])
 // 		}
@@ -139,21 +126,15 @@ func (t *Table) FindByField(field string, val string) (*Table, error) {
 // }
 
 func (t *Table) GreaterThanByField(field string, val string) (*Table, error) {
-	t.sortField = -2
-	for i, val := range t.Fields {
-		if val == field {
-			t.sortField = i - 1 // Fields include "Id" at index 0
-			break
-		}
-	}
-	if t.sortField == -2 {
-		return nil, errors.New(fmt.Sprintf("Invalid search field: %s\n", field))
+	err := t.setPivotField(field)
+	if err != nil {
+		return nil, err
 	}
 
 	keys := make([]string, 0)
 	ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
 	for _, key := range t.Keys {
-		if t.Records[key][t.sortField] > val {
+		if t.Records[key][t.pivotField.Index] > val {
 			ret.AddKey(key)
 			ret.AddRecord(key, t.Records[key])
 		}
@@ -191,3 +172,24 @@ func (t *Table) Last(n int) (*Table, error) {
 
 // 	return ret, nil
 // }
+
+func (t *Table) setPivotField(fieldName string) error {
+	if fieldName == fields.ID.Name {
+		t.pivotField = fields.ID
+		return nil
+	}
+
+	t.pivotField = fields.INVALID_FIELD
+	for _, field := range t.Fields {
+		if field.Name == fieldName {
+			t.pivotField = field
+			break
+		}
+	}
+
+	if t.pivotField == fields.INVALID_FIELD {
+		return errors.New(fmt.Sprintf("Invalid search field: %s\n", fieldName))
+	}
+
+	return nil
+}
