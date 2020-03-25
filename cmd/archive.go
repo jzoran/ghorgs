@@ -155,9 +155,12 @@ func (a *archiveT) run(c *cmds.Command, args []string) {
 	var err error
 	if a.names != nil {
 		projection, err = dataProjectionByName()
-		if err != nil && projection == nil {
+		if err != nil {
 			fmt.Println(err.Error())
-			return
+			if projection == nil {
+				// nothing to work with so just return
+				return
+			}
 		}
 	} else {
 		projection = a.data["repos"]
@@ -205,17 +208,17 @@ func dataProjectionByName() (*model.Table, error) {
 	}
 
 	// find all a.names in the a.data set and add to projection
-	ok := false
+	ok := true
 	for _, name := range a.names {
 		t, err := a.data["repos"].FindByField("Name", name)
 		if err == nil {
-			ok = true
 			key := t.Keys[0]
 			record := t.Records[key]
 
 			projection.AddKey(key)
 			projection.AddRecord(key, record)
 		} else {
+			ok = false
 			if utils.Debug.Verbose {
 				log.Println(err.Error())
 			}
