@@ -85,7 +85,7 @@ func (a *archiveT) addCache(c map[string]*model.Table) {
 func (a *archiveT) validateArgs(c *cmds.Command, args []string) error {
 	var err error
 
-	// verify that the number of repos is a positive integer
+	// Verify that the number of repos is a positive integer.
 	a.n, err = c.Flags().GetInt("n")
 	if err != nil {
 		panic(err)
@@ -95,7 +95,7 @@ func (a *archiveT) validateArgs(c *cmds.Command, args []string) error {
 		return fmt.Errorf("Insert --n greater than 0.")
 	}
 
-	// verify that the date is in format YYYY-MM-DD, starting from 1900-01-01
+	// Verify that the date is in format YYYY-MM-DD, starting from 1900-01-01
 	a.since, err = c.Flags().GetString("since")
 	if err != nil {
 		panic(err)
@@ -112,27 +112,27 @@ func (a *archiveT) validateArgs(c *cmds.Command, args []string) error {
 		}
 	}
 
-	// verify that repos are a comma separated list of alphanumerics and
-	// ignore number of repos to archive
+	// Verify that repos are a comma separated list of alphanumerics and
+	// special characters '.', '_' and '-'.
+	// Ignore number of repos to archive.
 	repos, err := c.Flags().GetString("repos")
 	if err != nil {
 		panic(err)
 	}
 	if repos != "" {
-		// matched, err := regexp.MatchString(`^[[:alnum:]]+(\,[[:alnum:]]+)*$`, repos)
 		matched, err := regexp.MatchString(`^[\.|\-|\_|[:alnum:]]+(\,[\.|\-|\_|[:alnum:]]+)*$`, repos)
 		if err != nil {
 			return err
 		}
 		if !matched {
-			return fmt.Errorf("--repos can only contain a comma separated list of repository names written in ascii alpha-numeric characters.")
+			return fmt.Errorf("--repos can only contain a comma separated list of repository names written in ascii alpha-numeric characters ([._-] are allowed.).")
 		}
 
 		a.names = strings.Split(repos, ",")
 		a.n = 0
 	}
 
-	// verify path
+	// Verify path of out folder.
 	a.outFolder, err = c.Flags().GetString("out")
 	if err != nil {
 		panic(err)
