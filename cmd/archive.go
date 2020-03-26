@@ -205,11 +205,20 @@ func (a *archiveT) run(c *cmds.Command, args []string) {
 	}
 
 	// 5. iterate over result to:
-	//   5.0 git clone from url into -O
-	//   5.1 tar.gz the clone in -O
-	//   5.2 compare tar -tvf with clone (compare size?)
-	//   5.3 rm clone in -O
-	//   5.4 rm repo in GitHub
+	for _, key := range projection.Keys {
+		//   5.0 git clone from url into -O
+		url := projection.Records[key][2]
+		fmt.Println(fmt.Sprintf("Cloning `%s` to `%s` ...", url, a.outFolder))
+		err = utils.GitClone(url, a.outFolder, projection.Records[key][0])
+		if err != nil {
+			fmt.Println(err.Error())
+			continue
+		}
+		//   5.1 tar.gz the clone in -O
+		//   5.2 compare tar -tvf with clone (compare size?)
+		//   5.3 rm clone in -O
+		//   5.4 rm repo in GitHub
+	}
 }
 
 func dataProjectionByName() (*model.Table, error) {
