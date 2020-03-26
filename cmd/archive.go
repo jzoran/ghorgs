@@ -191,6 +191,19 @@ func (a *archiveT) run(c *cmds.Command, args []string) {
 	// 4. display the result to the user and request confirmation
 	fmt.Println("\nThe following repositories will be removed from GitHub and archived:")
 	fmt.Println(fmt.Sprintf("%s\n", projection.ToString()))
+	fmt.Println("Are you sure you want to continue? (y/N):")
+
+	var y string
+	n, err := fmt.Scanf("%s", &y)
+	if err != nil {
+		fmt.Println(n)
+		fmt.Println(err.Error())
+	}
+	if y != "y" && y != "yes" && y != "yep" && y != "Y" && y != "Yes" && y != "Sure thing, mate! Please do carry on." {
+		fmt.Println("OK, aborting...")
+		return
+	}
+
 	// 5. iterate over result to:
 	//   5.0 git clone from url into -O
 	//   5.1 tar.gz the clone in -O
