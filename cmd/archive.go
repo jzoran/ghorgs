@@ -22,15 +22,17 @@ type archiver struct {
 	data      map[string]*model.Table
 }
 
-var a = &archiver{}
-
-var archiveCmd = &cmds.Command{
-	Use:   "archive",
-	Short: "Archive GitHub repositories according to given criteria.",
-	Long:  `Remove GitHub repositories according to given criteria and archive to a given folder.`,
-	Args:  a.validateArgs,
-	Run:   a.run,
-}
+var (
+	a          = &archiver{}
+	archiveCmd = &cmds.Command{
+		Use:   "archive",
+		Short: "Archive GitHub repositories according to given criteria.",
+		Long:  `Remove GitHub repositories according to given criteria and archive to a given folder.`,
+		Args:  a.validateArgs,
+		Run:   a.run,
+	}
+	repos       = model.Repos
+)
 
 func init() {
 	archiveCmd.Flags().IntP("n",
@@ -148,7 +150,7 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 	fmt.Println("TODO: implement archive...")
 
 	// 0. get cache for repos
-	a.addCache(Cache([]string{"repos"}, model.EntityMap))
+	a.addCache(Cache([]model.Entity{repos}))
 
 	// 2. if --repos set, get cache projection to --repos,
 	var projection *model.Table
@@ -163,7 +165,7 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 			}
 		}
 	} else {
-		projection = a.data["repos"]
+		projection = a.data[repos.GetName()]
 	}
 
 	// 1. sort by `last updated`
@@ -222,9 +224,8 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 }
 
 func dataProjectionByName() (*model.Table, error) {
-	reposEntity := model.EntityMap["repos"]
-	projection := model.MakeTable(reposEntity.GetTableFields())
-	_, err := a.data["repos"].SortByField("Name")
+	projection := repos.MakeTable()
+	_, err := a.data[repos.GetName()].SortByField("Name")
 	if err != nil {
 		panic(err)
 	}
@@ -232,7 +233,7 @@ func dataProjectionByName() (*model.Table, error) {
 	// find all a.names in the a.data set and add to projection
 	ok := true
 	for _, name := range a.names {
-		t, err := a.data["repos"].FindByField("Name", name)
+		t, err := a.data[repos.GetName()].FindByField("Name", name)
 		if err == nil {
 			key := t.Keys[0]
 			record := t.Records[key]

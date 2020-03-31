@@ -11,7 +11,7 @@ import (
 )
 
 type dumper struct {
-	entities []string
+	entities []model.Entity
 	by       string
 	data     map[string]*model.Table
 }
@@ -31,7 +31,7 @@ func init() {
 		"e",
 		"all",
 		"'all' for full dump or comma separated list of one or more of:\n"+
-			"    "+sliceToStr(model.EntityList)+".")
+			"    "+sliceToStr(model.EntityNamesList)+".")
 
 	dumpCmd.Flags().StringP("by",
 		"b",
@@ -69,7 +69,7 @@ func (d *dumper) validateArgs(c *cmds.Command, args []string) error {
 }
 
 func (d *dumper) run(c *cmds.Command, args []string) {
-	d.addCache(Cache(d.entities, model.EntityMap))
+	d.addCache(Cache(d.entities))
 	for name, t := range d.data {
 		entity := model.EntityMap[name]
 		filename := entity.GetCsvFile()

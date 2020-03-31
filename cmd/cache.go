@@ -11,11 +11,10 @@ import (
 	"log"
 )
 
-func Cache(request []string, using map[string]model.Entity) map[string]*model.Table {
+func Cache(request []model.Entity) map[string]*model.Table {
 	result := make(map[string]*model.Table, len(request))
-	for _, entityName := range request {
-		entity := using[entityName]
-		fmt.Printf("\nCaching %s...", entityName)
+	for _, entity := range request {
+		fmt.Printf("\nCaching %s...", entity.GetName())
 
 		t := entity.MakeTable()
 		req := entity.MakeQuery(gnet.Conf.Organization)
@@ -62,7 +61,7 @@ func Cache(request []string, using map[string]model.Entity) map[string]*model.Ta
 				}
 			}
 		}
-		result[entityName] = t
+		result[entity.GetName()] = t
 		if !utils.Debug.Verbose {
 			fmt.Printf("\n")
 		}

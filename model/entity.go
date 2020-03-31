@@ -32,21 +32,21 @@ type Entity interface {
 }
 
 var (
-	EntityMap  map[string]Entity
-	EntityList []string
+	EntityMap       map[string]Entity
+	EntityNamesList []string
 
-	repos *ReposResponse
-	users *UsersResponse
+	Repos *ReposResponse
+	Users *UsersResponse
 )
 
 func init() {
-	repos = &ReposResponse{}
-	users = &UsersResponse{}
+	Repos = &ReposResponse{}
+	Users = &UsersResponse{}
 	EntityMap = map[string]Entity{
-		repos.GetName(): repos,
-		users.GetName(): users,
+		Repos.GetName(): Repos,
+		Users.GetName(): Users,
 	}
-	EntityList = keysOf(EntityMap)
+	EntityNamesList = keysOf(EntityMap)
 }
 
 // Check that a comma separated list of entities, e,
@@ -54,20 +54,20 @@ func init() {
 // subset of entities.
 // In case of error return "Unknown entity" error,
 // otherwise nil.
-func ValidateEntities(e string) ([]string, error) {
-	var activeEntities = make([]string, 0, len(EntityList))
+func ValidateEntities(e string) ([]Entity, error) {
+	var activeEntities = make([]Entity, 0, len(EntityNamesList))
 	if e == "" || e == "all" {
-		for name, _ := range EntityMap {
-			activeEntities = append(activeEntities, name)
+		for _, entity := range EntityMap {
+			activeEntities = append(activeEntities, entity)
 		}
 	} else {
 		var slices = strings.Split(e, ",")
 		for _, s := range slices {
-			_, ok := EntityMap[s]
+			entity, ok := EntityMap[s]
 			if !ok {
-				return []string{}, errors.New(fmt.Sprintf("Unknown entity: %s\n", s))
+				return []Entity{}, errors.New(fmt.Sprintf("Unknown entity: %s\n", s))
 			}
-			activeEntities = append(activeEntities, s)
+			activeEntities = append(activeEntities, entity)
 		}
 	}
 
@@ -76,17 +76,16 @@ func ValidateEntities(e string) ([]string, error) {
 
 // Check that a given field exists in the list
 // of active entities ActiveEntities.
-func ValidateEntityField(field string, activeEntities []string) error {
+func ValidateEntityField(field string, activeEntities []Entity) error {
 	if field == "" || field == ID.Name {
 		return nil
 	}
 
-	for _, entityName := range activeEntities {
-		entity := EntityMap[entityName]
+	for _, entity := range activeEntities {
 		if !entity.HasField(field) {
 			return errors.New(fmt.Sprintf("Field `%s` not found in `%s`. Choose one of: %s.\n",
 				field,
-				entityName,
+				entity.GetName(),
 				strings.Join(entity.GetTableFieldNames(), ", ")))
 		}
 	}
