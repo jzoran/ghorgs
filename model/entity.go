@@ -22,7 +22,7 @@ type Entity interface {
 	HasField(s string) bool
 	GetCsvFile() string
 
-	MakeQuery(org string) IQuery
+	MakeQuery(org string) Query
 	FromJsonBuffer(buff []byte)
 	GetTotal() int
 	HasNext() bool

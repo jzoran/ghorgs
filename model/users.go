@@ -85,7 +85,7 @@ type UsersResponse struct {
 }
 
 type UsersQuery struct {
-	Query
+	QueryBase
 }
 
 func makeUsersQuery(organization string) *UsersQuery {
@@ -93,11 +93,11 @@ func makeUsersQuery(organization string) *UsersQuery {
 }
 
 func (q *UsersQuery) GetCount() int {
-	return q.Query.Count
+	return q.QueryBase.Count
 }
 
 func (q *UsersQuery) GetNext(after string) {
-	q.Query.getNext(usersNextGraphQlJson, after)
+	q.QueryBase.getNext(usersNextGraphQlJson, after)
 }
 
 func (r *UsersResponse) GetName() string {
@@ -108,7 +108,7 @@ func (r *UsersResponse) MakeTable() *Table {
 	return MakeTable(usersTableFields)
 }
 
-func (r *UsersResponse) MakeQuery(org string) IQuery {
+func (r *UsersResponse) MakeQuery(org string) Query {
 	return makeUsersQuery(org)
 }
 

@@ -63,7 +63,7 @@ type ReposResponse struct {
 }
 
 type ReposQuery struct {
-	Query
+	QueryBase
 }
 
 func makeReposQuery(organization string) *ReposQuery {
@@ -71,11 +71,11 @@ func makeReposQuery(organization string) *ReposQuery {
 }
 
 func (q *ReposQuery) GetCount() int {
-	return q.Query.Count
+	return q.QueryBase.Count
 }
 
 func (q *ReposQuery) GetNext(after string) {
-	q.Query.getNext(reposNextGraphQlJson, after)
+	q.QueryBase.getNext(reposNextGraphQlJson, after)
 }
 
 func (r *ReposResponse) GetName() string {
@@ -86,7 +86,7 @@ func (r *ReposResponse) MakeTable() *Table {
 	return MakeTable(reposTableFields)
 }
 
-func (r *ReposResponse) MakeQuery(org string) IQuery {
+func (r *ReposResponse) MakeQuery(org string) Query {
 	return makeReposQuery(org)
 }
 

@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-type archiveT struct {
+type archiver struct {
 	n         int
 	since     string
 	names     []string
@@ -22,7 +22,7 @@ type archiveT struct {
 	data      map[string]*model.Table
 }
 
-var a = &archiveT{}
+var a = &archiver{}
 
 var archiveCmd = &cmds.Command{
 	Use:   "archive",
@@ -78,11 +78,11 @@ NOTE: --n will be ignored if used with --repos.
 
 }
 
-func (a *archiveT) addCache(c map[string]*model.Table) {
+func (a *archiver) addCache(c map[string]*model.Table) {
 	a.data = c
 }
 
-func (a *archiveT) validateArgs(c *cmds.Command, args []string) error {
+func (a *archiver) validateArgs(c *cmds.Command, args []string) error {
 	var err error
 
 	// Verify that the number of repos is a positive integer.
@@ -144,7 +144,7 @@ func (a *archiveT) validateArgs(c *cmds.Command, args []string) error {
 	return nil
 }
 
-func (a *archiveT) run(c *cmds.Command, args []string) {
+func (a *archiver) run(c *cmds.Command, args []string) {
 	fmt.Println("TODO: implement archive...")
 
 	// 0. get cache for repos

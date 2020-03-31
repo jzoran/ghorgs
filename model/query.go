@@ -9,19 +9,19 @@ import (
 	"io/ioutil"
 )
 
-type Query struct {
+type QueryBase struct {
 	Organization     string
 	Count            int
 	GraphQlQueryJson string
 }
 
-type IQuery interface {
+type Query interface {
 	GetGraphQlJson() string
 	GetNext(after string)
 	GetCount() int
 }
 
-func makeQuery(jsonFile string, organization string) Query {
+func makeQuery(jsonFile string, organization string) QueryBase {
 	if organization == "" {
 		organization = gnet.Conf.Organization
 	}
@@ -34,20 +34,20 @@ func makeQuery(jsonFile string, organization string) Query {
 	if err != nil {
 		panic(err)
 	}
-	return Query{organization,
+	return QueryBase{organization,
 		gnet.Conf.PerPage,
 		fmt.Sprintf(string(bytes), organization, gnet.Conf.PerPage)}
 }
 
-func (q *Query) GetCount() int {
+func (q *QueryBase) GetCount() int {
 	return q.Count
 }
 
-func (q *Query) GetGraphQlJson() string {
+func (q *QueryBase) GetGraphQlJson() string {
 	return q.GraphQlQueryJson
 }
 
-func (q *Query) getNext(jsonFile string, after string) {
+func (q *QueryBase) getNext(jsonFile string, after string) {
 	bytes, err := ioutil.ReadFile(jsonFile)
 	if err != nil {
 		panic(err)

@@ -10,13 +10,13 @@ import (
 	cmds "github.com/spf13/cobra"
 )
 
-type dumpT struct {
+type dumper struct {
 	entities []string
 	by       string
 	data     map[string]*model.Table
 }
 
-var d = &dumpT{}
+var d = &dumper{}
 
 var dumpCmd = &cmds.Command{
 	Use:   "dump",
@@ -42,11 +42,11 @@ func init() {
 	rootCmd.AddCommand(dumpCmd)
 }
 
-func (d *dumpT) addCache(c map[string]*model.Table) {
+func (d *dumper) addCache(c map[string]*model.Table) {
 	d.data = c
 }
 
-func (d *dumpT) validateArgs(c *cmds.Command, args []string) error {
+func (d *dumper) validateArgs(c *cmds.Command, args []string) error {
 	ents, err := c.Flags().GetString("entities")
 	if err != nil {
 		panic(err)
@@ -68,7 +68,7 @@ func (d *dumpT) validateArgs(c *cmds.Command, args []string) error {
 	return nil
 }
 
-func (d *dumpT) run(c *cmds.Command, args []string) {
+func (d *dumper) run(c *cmds.Command, args []string) {
 	d.addCache(Cache(d.entities, model.EntityMap))
 	for name, t := range d.data {
 		entity := model.EntityMap[name]

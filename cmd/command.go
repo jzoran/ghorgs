@@ -8,7 +8,7 @@ import (
 	cmds "github.com/spf13/cobra"
 )
 
-type commandI interface {
+type commander interface {
 	addCache(c map[string]*model.Table)
 	validateArgs(c *cmds.Command, args []string) error
 	run(c *cmds.Command, args []string)
