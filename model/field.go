@@ -8,6 +8,11 @@ type Field struct {
 	Index int
 }
 
+type Fields interface {
+	asList() []Field
+	DisplayNames() []string
+}
+
 var (
 	// Since a single record in Table.Records is
 	// a slice of strings with slice indices mapping

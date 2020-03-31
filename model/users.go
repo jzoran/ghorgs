@@ -18,21 +18,53 @@ const (
 )
 
 var (
-	usersTableFields = []Field{
+	usersTableFields = &UsersFields{
 		//&Field{"Id", -1}, // default for table as key for map of Records
-		Field{"Login", 0},
-		Field{"Name", 1},
-		Field{"Admin", 2},
-		Field{"2FA", 3},
-		Field{"Email", 4},
-		Field{"Company", 5},
-		Field{"Url", 6},
-		Field{"Bio", 7},
-		Field{"Status", 8},
-		Field{"Updated", 9},
-		Field{"Repositories Contributed To", 10}}
-	usersTableFieldNames = namesOf(usersTableFields)
+		Login:        Field{"Login", 0},
+		Name:         Field{"Name", 1},
+		Admin:        Field{"Admin", 2},
+		MFA:          Field{"2FA", 3},
+		Email:        Field{"Email", 4},
+		Company:      Field{"Company", 5},
+		Url:          Field{"Url", 6},
+		Bio:          Field{"Bio", 7},
+		Status:       Field{"Status", 8},
+		Updated:      Field{"Updated", 9},
+		Repositories: Field{"Repositories Contributed To", 10}}
+	usersTableFieldNames = namesOf(usersTableFields.asList())
 )
+
+type UsersFields struct {
+	Login        Field
+	Name         Field
+	Admin        Field
+	MFA          Field
+	Email        Field
+	Company      Field
+	Url          Field
+	Bio          Field
+	Status       Field
+	Updated      Field
+	Repositories Field
+}
+
+func (f *UsersFields) asList() []Field {
+	return []Field{usersTableFields.Login,
+		usersTableFields.Name,
+		usersTableFields.Admin,
+		usersTableFields.MFA,
+		usersTableFields.Email,
+		usersTableFields.Company,
+		usersTableFields.Url,
+		usersTableFields.Bio,
+		usersTableFields.Status,
+		usersTableFields.Updated,
+		usersTableFields.Repositories}
+}
+
+func (f *UsersFields) DisplayNames() []string {
+	return usersTableFieldNames
+}
 
 type UserStatus struct {
 	Message string `json:"message"`
@@ -105,7 +137,7 @@ func (r *UsersResponse) GetName() string {
 }
 
 func (r *UsersResponse) MakeTable() *Table {
-	return MakeTable(usersTableFields)
+	return MakeTable(usersTableFields.asList())
 }
 
 func (r *UsersResponse) MakeQuery(org string) Query {
@@ -193,12 +225,8 @@ func (r *UsersResponse) AppendTable(c *Table) {
 	}
 }
 
-func (r *UsersResponse) GetTableFields() []Field {
+func (r *UsersResponse) GetFields() Fields {
 	return usersTableFields
-}
-
-func (r *UsersResponse) GetTableFieldNames() []string {
-	return usersTableFieldNames
 }
 
 func (r *UsersResponse) HasField(s string) bool {

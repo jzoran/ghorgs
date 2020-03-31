@@ -32,6 +32,7 @@ var (
 		Run:   a.run,
 	}
 	repos       = model.Repos
+	reposFields = model.Repos.GetFields().(*model.RepositoryFields)
 )
 
 func init() {
@@ -169,7 +170,7 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 	}
 
 	// 1. sort by `last updated`
-	_, err = projection.SortByField("Updated")
+	_, err = projection.SortByField(reposFields.Updated.Name)
 	if err != nil {
 		panic(err)
 	}
@@ -184,7 +185,7 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 
 	// 3. get copy of cache cut by --since flag
 	if a.since != "" {
-		projection, err = projection.GreaterThanByField("Updated", a.since)
+		projection, err = projection.GreaterThanByField(reposFields.Updated.Name, a.since)
 		if err != nil {
 			panic(err)
 		}
@@ -209,9 +210,9 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 	// 5. iterate over result to:
 	for _, key := range projection.Keys {
 		//   5.0 git clone from url into -O
-		url := projection.Records[key][2]
+		url := projection.Records[key][reposFields.Url.Index]
 		fmt.Println(fmt.Sprintf("Cloning `%s` to `%s` ...", url, a.outFolder))
-		err = utils.GitClone(url, a.outFolder, projection.Records[key][0])
+		err = utils.GitClone(url, a.outFolder, projection.Records[key][reposFields.Name.Index])
 		if err != nil {
 			fmt.Println(err.Error())
 			continue
@@ -225,7 +226,7 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 
 func dataProjectionByName() (*model.Table, error) {
 	projection := repos.MakeTable()
-	_, err := a.data[repos.GetName()].SortByField("Name")
+	_, err := a.data[repos.GetName()].SortByField(reposFields.Name.Name)
 	if err != nil {
 		panic(err)
 	}
@@ -233,7 +234,7 @@ func dataProjectionByName() (*model.Table, error) {
 	// find all a.names in the a.data set and add to projection
 	ok := true
 	for _, name := range a.names {
-		t, err := a.data[repos.GetName()].FindByField("Name", name)
+		t, err := a.data[repos.GetName()].FindByField(reposFields.Name.Name, name)
 		if err == nil {
 			key := t.Keys[0]
 			record := t.Records[key]

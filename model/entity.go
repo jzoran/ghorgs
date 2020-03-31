@@ -17,8 +17,7 @@ type Entity interface {
 
 	MakeTable() *Table
 	AppendTable(c *Table)
-	GetTableFields() []Field
-	GetTableFieldNames() []string
+	GetFields() Fields
 	HasField(s string) bool
 	GetCsvFile() string
 
@@ -86,7 +85,7 @@ func ValidateEntityField(field string, activeEntities []Entity) error {
 			return errors.New(fmt.Sprintf("Field `%s` not found in `%s`. Choose one of: %s.\n",
 				field,
 				entity.GetName(),
-				strings.Join(entity.GetTableFieldNames(), ", ")))
+				strings.Join(entity.GetFields().DisplayNames(), ", ")))
 		}
 	}
 

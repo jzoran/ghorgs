@@ -18,16 +18,38 @@ const (
 )
 
 var (
-	reposTableFields = []Field{
+	reposTableFields = &RepositoryFields{
 		//&Field{"Id", -1} // default for table as key for map of Records
-		Field{"Name", 0},
-		Field{"Type", 1},
-		Field{"Url", 2},
-		Field{"DiskUsage (kB)", 3},
-		Field{"Updated", 4},
-		Field{"Last Push", 5}}
-	reposTableFieldNames = namesOf(reposTableFields)
+		Name:      Field{"Name", 0},
+		Type:      Field{"Type", 1},
+		Url:       Field{"Url", 2},
+		DiskUsage: Field{"DiskUsage (kB)", 3},
+		Updated:   Field{"Updated", 4},
+		LastPush:  Field{"Last Push", 5}}
+	reposTableFieldNames = namesOf(reposTableFields.asList())
 )
+
+type RepositoryFields struct {
+	Name      Field
+	Type      Field
+	Url       Field
+	DiskUsage Field
+	Updated   Field
+	LastPush  Field
+}
+
+func (f *RepositoryFields) asList() []Field {
+	return []Field{reposTableFields.Name,
+		reposTableFields.Type,
+		reposTableFields.Url,
+		reposTableFields.DiskUsage,
+		reposTableFields.Updated,
+		reposTableFields.LastPush}
+}
+
+func (f *RepositoryFields) DisplayNames() []string {
+	return reposTableFieldNames
+}
 
 type Repository struct {
 	Id        string    `json:"id"`
@@ -83,7 +105,7 @@ func (r *ReposResponse) GetName() string {
 }
 
 func (r *ReposResponse) MakeTable() *Table {
-	return MakeTable(reposTableFields)
+	return MakeTable(reposTableFields.asList())
 }
 
 func (r *ReposResponse) MakeQuery(org string) Query {
@@ -138,12 +160,8 @@ func (r *ReposResponse) AppendTable(c *Table) {
 	}
 }
 
-func (r *ReposResponse) GetTableFields() []Field {
+func (r *ReposResponse) GetFields() Fields {
 	return reposTableFields
-}
-
-func (r *ReposResponse) GetTableFieldNames() []string {
-	return reposTableFieldNames
 }
 
 func (r *ReposResponse) HasField(s string) bool {
