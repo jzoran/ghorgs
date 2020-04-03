@@ -10,6 +10,7 @@ import (
 	cmds "github.com/spf13/cobra"
 	"log"
 	"os"
+	"path"
 	"regexp"
 	"strings"
 )
@@ -212,14 +213,23 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 		//   5.0 git clone from url into -O
 		url := projection.Records[key][reposFields.Url.Index]
 		fmt.Println(fmt.Sprintf("Cloning `%s` to `%s` ...", url, a.outFolder))
-		err = utils.GitClone(url, a.outFolder, projection.Records[key][reposFields.Name.Index])
+		repoName := projection.Records[key][reposFields.Name.Index]
+		err = utils.GitClone(url, a.outFolder, repoName)
 		if err != nil {
 			fmt.Println(err.Error())
 			continue
 		}
 		//   5.1 tar.gz the clone in -O
+		clonePath := path.Join(a.outFolder, repoName)
+		err = utils.TarGz(repoName, clonePath, a.outFolder)
+		if err != nil {
+			fmt.Println(err.Error())
+			continue
+		}
 		//   5.2 compare tar -tvf with clone (compare size?)
 		//   5.3 rm clone in -O
+		fmt.Println(fmt.Sprintf("Removing %s...", clonePath))
+		os.RemoveAll(path.Join(a.outFolder, repoName))
 		//   5.4 rm repo in GitHub
 	}
 }
