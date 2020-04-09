@@ -149,7 +149,7 @@ func (a *archiver) validateArgs(c *cmds.Command, args []string) error {
 }
 
 func (a *archiver) run(c *cmds.Command, args []string) {
-	fmt.Println("TODO: implement archive...")
+	fmt.Println("TODO: implement archive verification and Removal from GitHub...")
 
 	// 0. get cache for repos
 	a.addCache(Cache([]model.Entity{repos}))
@@ -170,10 +170,19 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 		projection = a.data[repos.GetName()]
 	}
 
-	// 1. sort by `last updated`
-	_, err = projection.SortByField(reposFields.Updated.Name)
-	if err != nil {
-		panic(err)
+	// 1. sort by `last updated` if "last n since" is requested,
+	//    otherwise, keep unsorted, i.e. in order of original
+	//    request from cli, e.g. for
+	//       `ghorgs archive -r repo1,repo3,repo2`
+	//    present as:
+	//       id_repo1 repo1 type_repo1 ...
+	//       id_repo3 repo3 type_repo3 ...
+	//       id_repo2 repo2 type_repo2 ...
+	if a.n > 0 || a.since != "" {
+		_, err = projection.SortByField(reposFields.Updated.Name)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	if a.n > 0 {
