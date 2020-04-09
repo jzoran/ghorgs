@@ -149,7 +149,7 @@ func (a *archiver) validateArgs(c *cmds.Command, args []string) error {
 }
 
 func (a *archiver) run(c *cmds.Command, args []string) {
-	fmt.Println("TODO: implement archive verification and Removal from GitHub...")
+	fmt.Println("TODO: implement archive removal from GitHub...")
 
 	// 0. get cache for repos
 	a.addCache(Cache([]model.Entity{repos}))
@@ -239,6 +239,13 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 			continue
 		}
 		//   5.2 compare tar -tvf with clone (compare size?)
+		fmt.Println(fmt.Sprintf("Archive '%s' created. Verifying...", destArchive))
+		err = utils.TargzVerify(destArchive, clonePath)
+		if err != nil {
+			fmt.Println(err.Error())
+			continue
+		}
+
 		//   5.3 rm clone in -O
 		fmt.Println(fmt.Sprintf("Removing %s...", clonePath))
 		os.RemoveAll(path.Join(a.outFolder, repoName))
