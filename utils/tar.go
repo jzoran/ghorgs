@@ -11,15 +11,13 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path"
 	"path/filepath"
 )
 
-func TarGz(name, src, out string) error {
-	destPath := path.Join(out, name+".tar.gz")
-	f, err := os.Create(destPath)
+func TarGz(dest, src string) error {
+	f, err := os.Create(dest)
 	if err != nil {
-		return fmt.Errorf("Could not create %s. Error! %s", destPath, err.Error())
+		return fmt.Errorf("Could not create %s. Error! %s", dest, err.Error())
 	}
 	defer f.Close()
 
@@ -47,7 +45,7 @@ func TarGz(name, src, out string) error {
 		h, err := tar.FileInfoHeader(fi, hf)
 		if err != nil {
 			return fmt.Errorf("Could not generate tar header for '%s'. Error! %s",
-				destPath, err.Error())
+				dest, err.Error())
 		}
 
 		// must provide real name
@@ -56,7 +54,7 @@ func TarGz(name, src, out string) error {
 		err = tw.WriteHeader(h)
 		if err != nil {
 			return fmt.Errorf("Could not write header for '%s'. Error! %s",
-				destPath, err.Error())
+				dest, err.Error())
 		}
 		// if a regular file, write file content
 		if fi.Mode().IsRegular() {
@@ -67,7 +65,7 @@ func TarGz(name, src, out string) error {
 			_, err = io.Copy(tw, data)
 			if err != nil {
 				return fmt.Errorf("Could not write '%s' to '%s'. Error! %s",
-					f, destPath, err.Error())
+					f, dest, err.Error())
 			}
 		}
 		return nil
