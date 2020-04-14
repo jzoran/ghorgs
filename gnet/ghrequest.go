@@ -9,6 +9,7 @@ import (
 
 type GitHubConfiguration struct {
 	Url          string `mapstructure:"url"`
+	User         string `mapstructure:"user"`
 	Token        string `mapstructure:"token"`
 	Organization string `mapstructure:"organization"`
 	PerPage      int    `mapstructure:"per_page"`

@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"os/exec"
 	"path"
@@ -23,8 +24,20 @@ func GitClone(url string, out string, name string) error {
 
 	err := cmd.Run()
 	if err != nil {
-		return fmt.Errorf("`git clone` failed with %s\n", err)
+		return fmt.Errorf("`git clone` failed with %s\n", err.Error())
 	}
 
 	return nil
+}
+
+func Url(rawurl, user, pass string) (string, error) {
+	u, err := url.Parse(rawurl)
+	if err != nil {
+		return "", fmt.Errorf("Project url (%s) error. %s", rawurl, err.Error())
+	}
+
+	if user != "" && pass != "" {
+		u.User = url.UserPassword(user, pass)
+	}
+	return u.String(), nil
 }

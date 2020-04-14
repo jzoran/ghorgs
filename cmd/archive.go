@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"ghorgs/gnet"
 	"ghorgs/model"
 	"ghorgs/utils"
 	cmds "github.com/spf13/cobra"
@@ -149,7 +150,13 @@ func (a *archiver) validateArgs(c *cmds.Command, args []string) error {
 }
 
 func (a *archiver) run(c *cmds.Command, args []string) {
+
 	fmt.Println("TODO: implement archive removal from GitHub...")
+
+	if gnet.Conf.User == "" || gnet.Conf.Token == "" {
+		fmt.Println("Error! Invalid credentials.")
+		return
+	}
 
 	// 0. get cache for repos
 	a.addCache(Cache([]model.Entity{repos}))
@@ -220,8 +227,15 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 	// 5. iterate over result to:
 	for _, key := range projection.Keys {
 		//   5.0 git clone from url into -O
-		url := projection.Records[key][reposFields.Url.Index]
-		fmt.Println(fmt.Sprintf("Cloning `%s` to `%s` ...", url, a.outFolder))
+		rawurl := projection.Records[key][reposFields.Url.Index]
+		url, err := utils.Url(rawurl,
+			gnet.Conf.User,
+			gnet.Conf.Token)
+		if err != nil {
+			fmt.Println(err.Error())
+			continue
+		}
+		fmt.Println(fmt.Sprintf("Cloning `%s` to `%s` ...", rawurl, a.outFolder))
 		repoName := projection.Records[key][reposFields.Name.Index]
 		err = utils.GitClone(url, a.outFolder, repoName)
 		if err != nil {

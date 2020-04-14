@@ -19,6 +19,7 @@ var rootCmd = &cmds.Command{
 }
 
 func initFlags(c *cmds.Command, args []string) {
+	gnet.Conf.User = flags.GetString("user")
 	gnet.Conf.Token = flags.GetString("token")
 	gnet.Conf.Organization = flags.GetString("organization")
 	utils.Debug.Verbose = flags.GetBool("verbose")
@@ -32,6 +33,12 @@ func init() {
 		false,
 		"Toggle debug printouts.")
 	flags.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
+
+	rootCmd.PersistentFlags().StringP("user",
+		"u",
+		"",
+		"User name of the owner of token. (Needed with 'git clone'.)")
+	flags.BindPFlag("user", rootCmd.PersistentFlags().Lookup("user"))
 
 	rootCmd.PersistentFlags().StringP("token",
 		"t",
