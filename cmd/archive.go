@@ -213,7 +213,9 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 	}
 
 	// 4. display the result to the user and request confirmation
-	fmt.Println("\nThe following repositories will be removed from GitHub and archived:")
+	fmt.Println(
+		fmt.Sprintf("\nThe following repositories will be removed from GitHub and archived (%d):",
+			len(projection.Keys)))
 	fmt.Println(fmt.Sprintf("%s\n", projection.ToString()))
 	fmt.Println("Are you sure you want to continue? (y/N):")
 
