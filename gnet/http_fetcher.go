@@ -15,14 +15,19 @@ import (
 
 type Request struct {
 	Url     string
+	Method  string
 	Headers map[string]string
 	Query   string
 	Timeout time.Duration // in sec
 }
 
-func (r *Request) Fetch() []byte {
-	reqbody := strings.NewReader(r.Query)
-	req, err := http.NewRequest("POST", r.Url, reqbody)
+func (r *Request) Execute() []byte {
+	reqq := ""
+	if r.Method == postMethod {
+		reqq = r.Query
+	}
+	reqbody := strings.NewReader(reqq)
+	req, err := http.NewRequest(r.Method, r.Url, reqbody)
 	if err != nil {
 		panic(err)
 	}

@@ -4,6 +4,8 @@
 package gnet
 
 import (
+	"net/url"
+	"path"
 	"time"
 )
 
@@ -16,14 +18,43 @@ type GitHubConfiguration struct {
 	TimeOut      int    `mapstructure:"time_out"`
 }
 
-var Conf GitHubConfiguration
+var (
+	v4Path     = "/graphql"
+	postMethod = "POST"
+	Conf       GitHubConfiguration
+)
 
-func MakeGitHubRequest(query string, token string) *Request {
+func MakeGitHubV3Request(method, query, token string) *Request {
 	if Conf.Token == "" {
 		panic("Missing GitHub token.")
 	}
 
-	return &Request{Conf.Url,
+	u, err := url.Parse(Conf.Url)
+	if err != nil {
+		panic(err)
+	}
+	u.Path = path.Join(u.Path, query)
+
+	return &Request{u.String(),
+		method,
+		map[string]string{"Authorization": "bearer " + Conf.Token},
+		query,
+		time.Duration(Conf.TimeOut) * time.Second}
+}
+
+func MakeGitHubV4Request(query string, token string) *Request {
+	if Conf.Token == "" {
+		panic("Missing GitHub token.")
+	}
+
+	u, err := url.Parse(Conf.Url)
+	if err != nil {
+		panic(err)
+	}
+
+	u.Path = path.Join(u.Path, v4Path)
+	return &Request{u.String(),
+		postMethod,
 		map[string]string{"Authorization": "bearer " + Conf.Token},
 		query,
 		time.Duration(Conf.TimeOut) * time.Second}

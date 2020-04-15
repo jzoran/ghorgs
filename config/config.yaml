@@ -1,4 +1,4 @@
-url: "https://api.github.com/graphql"
+url: "https://api.github.com"
 user: ""
 token: ""
 organization: "SonyMobile"

@@ -22,8 +22,8 @@ func Cache(request []model.Entity) map[string]*model.Table {
 			log.Print(req)
 		}
 
-		gitHubRequest := gnet.MakeGitHubRequest(req.GetGraphQlJson(), gnet.Conf.Token)
-		resp := gitHubRequest.Fetch()
+		gitHubRequest := gnet.MakeGitHubV4Request(req.GetGraphQlJson(), gnet.Conf.Token)
+		resp := gitHubRequest.Execute()
 		if utils.Debug.Verbose {
 			log.Print(resp)
 		}
@@ -45,8 +45,8 @@ func Cache(request []model.Entity) map[string]*model.Table {
 		for entity.HasNext() {
 			req.GetNext(entity.GetNext())
 
-			gitHubRequest = gnet.MakeGitHubRequest(req.GetGraphQlJson(), gnet.Conf.Token)
-			resp = gitHubRequest.Fetch()
+			gitHubRequest = gnet.MakeGitHubV4Request(req.GetGraphQlJson(), gnet.Conf.Token)
+			resp = gitHubRequest.Execute()
 
 			entity.FromJsonBuffer(resp)
 			entity.AppendTable(t)
