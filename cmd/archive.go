@@ -10,6 +10,7 @@ import (
 	"ghorgs/utils"
 	cmds "github.com/spf13/cobra"
 	"log"
+	"net/http"
 	"os"
 	"path"
 	"regexp"
@@ -151,8 +152,6 @@ func (a *archiver) validateArgs(c *cmds.Command, args []string) error {
 
 func (a *archiver) run(c *cmds.Command, args []string) {
 
-	fmt.Println("TODO: implement archive removal from GitHub...")
-
 	if gnet.Conf.User == "" || gnet.Conf.Token == "" {
 		fmt.Println("Error! Invalid credentials.")
 		return
@@ -269,6 +268,28 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 		fmt.Println(fmt.Sprintf("Removing %s...", clonePath))
 		os.RemoveAll(path.Join(a.outFolder, repoName))
 		//   5.4 rm repo in GitHub
+		rmRequest := gnet.MakeGitHubV3Request(http.MethodDelete,
+			path.Join(repos.GetName(),
+				gnet.Conf.Organization,
+				repoName),
+			gnet.Conf.Token)
+		resp, status := rmRequest.Execute()
+		if utils.Debug.Verbose {
+			log.Print(resp)
+		}
+		// check response for error:
+		// - `Status: 204 No Content` is OK
+		// - `Status: 403 Forbidden` - abort since Token doesn't have Delete rights
+		// - Any other code, continue
+		if status.Code == http.StatusForbidden {
+			fmt.Println("Error! HttpResponse:", status.Status)
+			fmt.Println("Token is not allowed to delete repository.")
+			return
+		}
+		if status.Code != http.StatusOK && status.Code != http.StatusNoContent {
+			fmt.Println("Error! HttpResponse:", status.Status)
+			continue
+		}
 	}
 }
 
