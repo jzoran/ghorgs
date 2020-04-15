@@ -123,6 +123,7 @@ Usage:
   ghorgs archive [flags]
 
   Flags:
+    -c, --confirm        Ask user for confirmation. (Use in interactive shell, carefully omit in scripts.
     -h, --help           help for archive
     -n, --n int          Number of repositories to archive.
         * If --n is used together with --since, then the result is:

@@ -18,6 +18,7 @@ import (
 )
 
 type archiver struct {
+	confirm   bool
 	n         int
 	since     string
 	names     []string
@@ -39,6 +40,11 @@ var (
 )
 
 func init() {
+	archiveCmd.Flags().BoolP("confirm",
+		"c",
+		false,
+		"Ask user for confirmation. (Use in interactive shell, carefully omit in scripts.)")
+
 	archiveCmd.Flags().IntP("n",
 		"n",
 		1,
@@ -90,6 +96,10 @@ func (a *archiver) addCache(c map[string]*model.Table) {
 
 func (a *archiver) validateArgs(c *cmds.Command, args []string) error {
 	var err error
+	a.confirm, err = c.Flags().GetBool("confirm")
+	if err != nil {
+		panic(err)
+	}
 
 	// Verify that the number of repos is a positive integer.
 	a.n, err = c.Flags().GetInt("n")
@@ -217,16 +227,8 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 		fmt.Sprintf("\nThe following repositories will be removed from GitHub and archived (%d):",
 			len(projection.Keys)))
 	fmt.Println(fmt.Sprintf("%s\n", projection.ToString()))
-	fmt.Println("Are you sure you want to continue? (y/N):")
 
-	var y string
-	n, err := fmt.Scanf("%s", &y)
-	if err != nil {
-		fmt.Println(n)
-		fmt.Println(err.Error())
-	}
-	if y != "y" && y != "yes" && y != "yep" && y != "Y" && y != "Yes" && y != "Sure thing, mate! Please do carry on." {
-		fmt.Println("OK, aborting...")
+	if !getUserConfirmation() {
 		return
 	}
 
@@ -331,4 +333,34 @@ func dataProjectionByName() (*model.Table, error) {
 
 	// there were some repos found and some not
 	return projection, fmt.Errorf("Errors found!")
+}
+
+func getUserConfirmation() bool {
+	if !a.confirm {
+		return true
+	}
+
+	fmt.Println("Are you sure you want to continue? (y/N):")
+	var yes string
+	n, err := fmt.Scanf("%s", &yes)
+	if err != nil {
+		fmt.Println(n)
+		fmt.Println(err.Error())
+		return false
+	}
+
+	return yes == "d" ||
+		yes == "da" ||
+		yes == "D" ||
+		yes == "Da" ||
+		yes == "j" ||
+		yes == "ja" ||
+		yes == "J" ||
+		yes == "Ja" ||
+		yes == "y" ||
+		yes == "yes" ||
+		yes == "yep" ||
+		yes == "Y" ||
+		yes == "Yes" ||
+		yes == "Sure thing, mate! Please do carry on."
 }
