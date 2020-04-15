@@ -159,11 +159,16 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 	}
 
 	// 0. get cache for repos
-	a.addCache(Cache([]model.Entity{repos}))
+	ca, err := Cache([]model.Entity{repos})
+	if err != nil {
+		fmt.Println("Error! %s", err.Error())
+		return
+	}
+
+	a.addCache(ca)
 
 	// 2. if --repos set, get cache projection to --repos,
 	var projection *model.Table
-	var err error
 	if a.names != nil {
 		projection, err = dataProjectionByName()
 		if err != nil {

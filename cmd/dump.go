@@ -69,7 +69,13 @@ func (d *dumper) validateArgs(c *cmds.Command, args []string) error {
 }
 
 func (d *dumper) run(c *cmds.Command, args []string) {
-	d.addCache(Cache(d.entities))
+	ca, err := Cache(d.entities)
+	if err != nil {
+		fmt.Println("Error! %s", err.Error())
+		return
+	}
+
+	d.addCache(ca)
 	for name, t := range d.data {
 		entity := model.EntityMap[name]
 		filename := entity.GetCsvFile()

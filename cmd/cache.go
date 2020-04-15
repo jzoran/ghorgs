@@ -9,9 +9,10 @@ import (
 	"ghorgs/model"
 	"ghorgs/utils"
 	"log"
+	"net/http"
 )
 
-func Cache(request []model.Entity) map[string]*model.Table {
+func Cache(request []model.Entity) (map[string]*model.Table, error) {
 	result := make(map[string]*model.Table, len(request))
 	for _, entity := range request {
 		fmt.Printf("\nCaching %s...", entity.GetName())
@@ -23,7 +24,11 @@ func Cache(request []model.Entity) map[string]*model.Table {
 		}
 
 		gitHubRequest := gnet.MakeGitHubV4Request(req.GetGraphQlJson(), gnet.Conf.Token)
-		resp := gitHubRequest.Execute()
+		resp, status := gitHubRequest.Execute()
+		if status.Code != http.StatusOK {
+			return result, fmt.Errorf("Error! HttpResponse: %s", status.Status)
+		}
+
 		if utils.Debug.Verbose {
 			log.Print(resp)
 		}
@@ -46,7 +51,10 @@ func Cache(request []model.Entity) map[string]*model.Table {
 			req.GetNext(entity.GetNext())
 
 			gitHubRequest = gnet.MakeGitHubV4Request(req.GetGraphQlJson(), gnet.Conf.Token)
-			resp = gitHubRequest.Execute()
+			resp, status = gitHubRequest.Execute()
+			if status.Code != http.StatusOK {
+				return result, fmt.Errorf("Error! HttpResponse: %s", status.Status)
+			}
 
 			entity.FromJsonBuffer(resp)
 			entity.AppendTable(t)
@@ -67,5 +75,5 @@ func Cache(request []model.Entity) map[string]*model.Table {
 		}
 	}
 
-	return result
+	return result, nil
 }

@@ -4,7 +4,6 @@
 package gnet
 
 import (
-	"fmt"
 	"ghorgs/utils"
 	"io/ioutil"
 	"log"
@@ -21,7 +20,12 @@ type Request struct {
 	Timeout time.Duration // in sec
 }
 
-func (r *Request) Execute() []byte {
+type ResponseStatus struct {
+	Code   int
+	Status string
+}
+
+func (r *Request) Execute() ([]byte, *ResponseStatus) {
 	reqq := ""
 	if r.Method == postMethod {
 		reqq = r.Query
@@ -50,12 +54,12 @@ func (r *Request) Execute() []byte {
 		if utils.Debug.Verbose {
 			log.Print(r.Query)
 		}
-		panic(fmt.Sprintf("HttpResponse: %d", resp.StatusCode))
+		return nil, &ResponseStatus{resp.StatusCode, resp.Status}
 	}
 
 	bbody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		panic(err)
 	}
-	return bbody
+	return bbody, &ResponseStatus{resp.StatusCode, resp.Status}
 }
