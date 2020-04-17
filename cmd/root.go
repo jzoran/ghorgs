@@ -46,6 +46,7 @@ func init() {
 		"Security token used on Github.\n"+
 			"  Required GitHub scopes covered by token are:\n"+
 			"    - user,\n"+
+			"    - delete_repo,\n"+
 			"    - public_repo,\n"+
 			"    - repo,\n"+
 			"    - repo_deployment,\n"+

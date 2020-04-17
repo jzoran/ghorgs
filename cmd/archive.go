@@ -68,7 +68,7 @@ NOTE: It will be ignored if used with --repos.
 		"",
 		`Comma separated list of repositories to archive.
 
-* Name can only contain alphanumeric characters.
+* Name can contain alphanumeric and special characters '_', '.' and '-'.
 * If --repos is used with --since, then the result is:
   "archive the repositories from --repos list if they have been inactive --since this point in time.
 

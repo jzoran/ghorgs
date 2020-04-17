@@ -16,10 +16,13 @@ an organization and then writes the output into a csv files.
 ### config
 
 #### config.yaml
-* url: URL to GitHub API, should be https://api.github.com/graphql
+* url: URL to GitHub API, should be https://api.github.com/
+  * That way both v3 and v4 API are internally differentiated.
+* user: username required for `git clone` in `ghorgs archive` command
 * token: String security token used on Github. Required GitHub scopes covered by token are:
   * user,
   * public_repo,
+  * delete_repo
   * repo,
   * repo_deployment,
   * repo:status,
@@ -34,7 +37,7 @@ an organization and then writes the output into a csv files.
 #### gql and json
 * gql files are GraphQL queries used for testing in Explore mode on GitHub
 * json files are GraphQL queries translated to json format required by
-  GitHub's API:
+  GitHub's v4 API:
 ```
 {
     "query": "<literal GraphQL query from gql file>"
@@ -54,7 +57,108 @@ with `go mod init`, which will recreate the go.mod and go.sum files.
 `go install`
 
 ## Run
-Run `ghorgs` for the latest documentation on how to use the tool.
+Usage:
+  ghorgs [command]
+
+  Available Commands:
+    archive     Archive GitHub repositories according to given criteria.
+    dump        Dumps the requested entities into a csv file.
+    help        Help about any command
+    remove      Remove GitHub users according to given criteria.
+    version     prints version of ghorgs tool
+
+  Flags:
+    -h, --help                  help for ghorgs
+    -o, --organization string   Organizational account on GitHub analyzed.
+    -t, --token string          Security token used on Github.
+        Required GitHub scopes covered by token are:
+            - user,
+            - delete_repo,
+            - public_repo,
+            - repo,
+            - repo_deployment,
+            - repo:status,
+            - read:repo_hook,
+            - read:org,
+            - read:public_key,
+            - read:gpg_key
+    -u, --user string           User name of the owner of token. (Needed with 'git clone'.)
+    -v, --verbose               Toggle debug printouts.
+Use "ghorgs [command] --help" for more information about a command.
+
+### Dump command
+Dumps the requested entities into a csv file.
+
+Usage:
+  ghorgs dump [flags]
+
+  Flags:
+    -b, --by string         Name of the entity field to use for sorting the result of the dump.
+        If empty, default sort on GitHub is creation date.
+    -e, --entities string   'all' for full dump or comma separated list of one or more of:
+        users, repos. (default "all")
+    -h, --help              help for dump
+
+  Global Flags:
+    -o, --organization string   Organizational account on GitHub analyzed.
+    -t, --token string          Security token used on Github.
+        Required GitHub scopes covered by token are:
+            - user,
+            - public_repo,
+            - repo,
+            - repo_deployment,
+            - repo:status,
+            - read:repo_hook,
+            - read:org,
+            - read:public_key,
+            - read:gpg_key
+    -u, --user string           User name of the owner of token. (Needed with 'git clone'.)
+    -v, --verbose               Toggle debug printouts.
+
+### Archive command
+Remove GitHub repositories according to given criteria and archive to a given folder.
+Uses v4 API for caching, v3 API for 'delete repository' command.
+
+Usage:
+  ghorgs archive [flags]
+
+  Flags:
+    -h, --help           help for archive
+    -n, --n int          Number of repositories to archive.
+        * If --n is used together with --since, then the result is:
+          "the number --n of repositories to archive --since point in time - whichever comes first."
+        * If used alone, then the result is:
+          "the least active number of repositories to archive".
+        NOTE: It will be ignored if used with --repos.
+        (default 1)
+    -O, --out string     Output folder where archives of repositories are recorded. (default ".")
+    -r, --repos string   Comma separated list of repositories to archive.
+        * Name can contain alphanumeric and special characters '_', '.' and '-'.
+        * If --repos is used with --since, then the result is:
+          "archive the repositories from --repos list if they have been inactive --since this point in time.
+        NOTE: --n will be ignored if used with --repos.
+    -s, --since string   Remove repositories inactive since this date (YYYY-MM-DD).
+        * If --since is used together with --n, then the result is:
+          "the number --n of repositories to archive --since point in time - whichever comes first."
+        * If --since is used together with --repos, then the result is:
+          "archive the repositories from --repos list if they have been inactive --since this point in time".
+
+  Global Flags:
+    -o, --organization string   Organizational account on GitHub analyzed.
+    -t, --token string          Security token used on Github.
+        Required GitHub scopes covered by token are:
+            - user,
+            - delete_repo,
+            - public_repo,
+            - repo,
+            - repo_deployment,
+            - repo:status,
+            - read:repo_hook,
+            - read:org,
+            - read:public_key,
+            - read:gpg_key
+    -u, --user string           User name of the owner of token. (Needed with 'git clone'.)
+    -v, --verbose               Toggle debug printouts.
 
 ## LICENSE
 Currently the tool is proprietary.
