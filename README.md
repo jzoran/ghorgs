@@ -123,7 +123,6 @@ Usage:
   ghorgs archive [flags]
 
   Flags:
-    -c, --confirm        Ask user for confirmation. (Use in interactive shell, carefully omit in scripts.
     -h, --help           help for archive
     -n, --n int          Number of repositories to archive.
         * If --n is used together with --since, then the result is:
@@ -133,6 +132,7 @@ Usage:
         NOTE: It will be ignored if used with --repos.
         (default 1)
     -O, --out string     Output folder where archives of repositories are recorded. (default ".")
+    -q, --quiet          DO NOT ask user for confirmation.(Use with care, e.g. in scripts where interaction is minimal or impossible.)
     -r, --repos string   Comma separated list of repositories to archive.
         * Name can contain alphanumeric and special characters '_', '.' and '-'.
         * If --repos is used with --since, then the result is:

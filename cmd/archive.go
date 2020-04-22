@@ -18,7 +18,7 @@ import (
 )
 
 type archiver struct {
-	confirm   bool
+	quiet     bool
 	n         int
 	since     string
 	names     []string
@@ -40,10 +40,11 @@ var (
 )
 
 func init() {
-	archiveCmd.Flags().BoolP("confirm",
-		"c",
+	archiveCmd.Flags().BoolP("quiet",
+		"q",
 		false,
-		"Ask user for confirmation. (Use in interactive shell, carefully omit in scripts.)")
+		"DO NOT ask user for confirmation."+
+			"(Use with care, e.g. in scripts where interaction is minimal or impossible.)")
 
 	archiveCmd.Flags().IntP("n",
 		"n",
@@ -96,7 +97,7 @@ func (a *archiver) addCache(c map[string]*model.Table) {
 
 func (a *archiver) validateArgs(c *cmds.Command, args []string) error {
 	var err error
-	a.confirm, err = c.Flags().GetBool("confirm")
+	a.quiet, err = c.Flags().GetBool("quiet")
 	if err != nil {
 		panic(err)
 	}
@@ -228,7 +229,7 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 			len(projection.Keys)))
 	fmt.Println(fmt.Sprintf("%s\n", projection.ToString()))
 
-	if !utils.GetUserConfirmation() {
+	if !a.quiet && !utils.GetUserConfirmation() {
 		return
 	}
 
