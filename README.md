@@ -161,5 +161,36 @@ Usage:
     -u, --user string           User name of the owner of token. (Needed with 'git clone'.)
     -v, --verbose               Toggle debug printouts.
 
+### Remove command
+Remove GitHub users according to given criteria.
+
+Usage:
+  ghorgs remove [flags]
+
+  Flags:
+    -A, --2FA            Remove users without 2FA set up.
+    -a, --access         Remove users without access to any repository owned by the organization.
+    -c, --company        Remove users without company affiliation.
+    -h, --help           help for remove
+    -q, --quiet          DO NOT ask user for confirmation. (Use with care, e.g. in scripts where interaction is minimal or impossible.)
+    -U, --users string   Comma separated list of users to remove. Name can contain alphanumeric and special characters '_', '.' and '-'.
+
+  Global Flags:
+    -o, --organization string   Organizational account on GitHub analyzed.
+    -t, --token string          Security token used on Github.
+        Required GitHub scopes covered by token are:
+            - user,
+            - delete_repo,
+            - public_repo,
+            - repo,
+            - repo_deployment,
+            - repo:status,
+            - read:repo_hook,
+            - read:org,
+            - read:public_key,
+            - read:gpg_key
+    -u, --user string           User name of the owner of token. (Needed with 'git clone'.)
+    -v, --verbose               Toggle debug printouts.
+
 ## LICENSE
 Currently the tool is proprietary.

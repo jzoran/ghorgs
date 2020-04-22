@@ -43,8 +43,8 @@ func init() {
 	rootCmd.PersistentFlags().StringP("token",
 		"t",
 		"",
-		"Security token used on Github.\n"+
-			"  Required GitHub scopes covered by token are:\n"+
+		"Security token used on Github. Overrides the token from configuration file.\n"+
+			"  Required GitHub scopes covered by a single token in the config file are:\n"+
 			"    - user,\n"+
 			"    - delete_repo,\n"+
 			"    - public_repo,\n"+
@@ -54,7 +54,9 @@ func init() {
 			"    - read:repo_hook,\n"+
 			"    - read:org,\n"+
 			"    - read:public_key,\n"+
-			"    - read:gpg_key")
+			"    - read:gpg_key.\n"+
+			" Individual commands don't require all the scopes, so different tokens can be "+
+			" used in the command line for different commands.")
 	flags.BindPFlag("token", rootCmd.PersistentFlags().Lookup("token"))
 
 	rootCmd.PersistentFlags().StringP("organization",
