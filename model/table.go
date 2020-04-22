@@ -149,7 +149,7 @@ func (t *Table) FindAllByFieldValues(field string, vals []string) (*Table, error
 	return ret, nil
 }
 
-// func (t *Table) LessThanByField(field string, val string) (*Table, error) {
+// func (t *Table) LessThanByField(field, val string) (*Table, error) {
 // 	err := t.setPivotField(field)
 //  if err != nil {
 //      return nil, err
@@ -167,7 +167,7 @@ func (t *Table) FindAllByFieldValues(field string, vals []string) (*Table, error
 // 	return ret, nil
 // }
 
-func (t *Table) GreaterThanByField(field string, val string) (*Table, error) {
+func (t *Table) GreaterThanByField(field, val string) (*Table, error) {
 	err := t.setPivotField(field)
 	if err != nil {
 		return nil, err
