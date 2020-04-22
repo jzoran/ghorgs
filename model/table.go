@@ -106,6 +106,49 @@ func (t *Table) FindByField(field string, val string) (*Table, error) {
 	return nil, fmt.Errorf("%s not found in field %s.", val, field)
 }
 
+func (t *Table) FindAllByFieldValues(field string, vals []string) (*Table, error) {
+	err := t.setPivotField(field)
+	if err != nil {
+		return nil, err
+	}
+
+	valsmap := make(map[string]int)
+	for _, val := range vals {
+		valsmap[val] = 0
+	}
+
+	var ret *Table = nil
+	for _, key := range t.Keys {
+		val := t.Records[key][t.pivotField.Index]
+		if _, ok := valsmap[val]; ok {
+			valsmap[val]++
+			if ret == nil {
+				ret = MakeTable(t.Fields)
+			}
+			ret.AddKey(key)
+			ret.AddRecord(key, t.Records[key])
+		}
+	}
+
+	if ret == nil {
+		return nil, fmt.Errorf("Requested values not found.")
+	}
+
+	ok := true
+	for k, v := range valsmap {
+		if v == 0 {
+			ok = false
+			fmt.Println(fmt.Sprintf("`%s` not found in `%s`", k, field))
+		}
+	}
+
+	if !ok {
+		return ret, fmt.Errorf("Error!")
+	}
+
+	return ret, nil
+}
+
 // func (t *Table) LessThanByField(field string, val string) (*Table, error) {
 // 	err := t.setPivotField(field)
 //  if err != nil {

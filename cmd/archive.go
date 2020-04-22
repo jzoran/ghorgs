@@ -180,7 +180,7 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 	// 2. if --repos set, get cache projection to --repos,
 	var projection *model.Table
 	if a.names != nil {
-		projection, err = dataProjectionByName()
+		projection, err = a.dataProjectionByName()
 		if err != nil {
 			fmt.Println(err.Error())
 			if projection == nil {
@@ -298,40 +298,6 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 	}
 }
 
-func dataProjectionByName() (*model.Table, error) {
-	projection := repos.MakeTable()
-	_, err := a.data[repos.GetName()].SortByField(reposFields.Name.Name)
-	if err != nil {
-		panic(err)
-	}
-
-	// find all a.names in the a.data set and add to projection
-	ok := true
-	for _, name := range a.names {
-		t, err := a.data[repos.GetName()].FindByField(reposFields.Name.Name, name)
-		if err == nil {
-			key := t.Keys[0]
-			record := t.Records[key]
-
-			projection.AddKey(key)
-			projection.AddRecord(key, record)
-		} else {
-			ok = false
-			if utils.Debug.Verbose {
-				log.Println(err.Error())
-			}
-			fmt.Println(fmt.Sprintf("`%s` not found in GitHub repositories.", name))
-		}
-	}
-	if ok {
-		return projection, nil
-	}
-
-	if len(projection.Keys) == 0 {
-		// no requested repo was found
-		return nil, fmt.Errorf("Errors found!")
-	}
-
-	// there were some repos found and some not
-	return projection, fmt.Errorf("Errors found!")
+func (a *archiver) dataProjectionByName() (*model.Table, error) {
+	return a.data[repos.GetName()].FindAllByFieldValues(reposFields.Name.Name, a.names)
 }
