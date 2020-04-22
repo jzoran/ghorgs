@@ -228,7 +228,7 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 			len(projection.Keys)))
 	fmt.Println(fmt.Sprintf("%s\n", projection.ToString()))
 
-	if !getUserConfirmation() {
+	if !utils.GetUserConfirmation() {
 		return
 	}
 
@@ -333,34 +333,4 @@ func dataProjectionByName() (*model.Table, error) {
 
 	// there were some repos found and some not
 	return projection, fmt.Errorf("Errors found!")
-}
-
-func getUserConfirmation() bool {
-	if !a.confirm {
-		return true
-	}
-
-	fmt.Println("Are you sure you want to continue? (y/N):")
-	var yes string
-	n, err := fmt.Scanf("%s", &yes)
-	if err != nil {
-		fmt.Println(n)
-		fmt.Println(err.Error())
-		return false
-	}
-
-	return yes == "d" ||
-		yes == "da" ||
-		yes == "D" ||
-		yes == "Da" ||
-		yes == "j" ||
-		yes == "ja" ||
-		yes == "J" ||
-		yes == "Ja" ||
-		yes == "y" ||
-		yes == "yes" ||
-		yes == "yep" ||
-		yes == "Y" ||
-		yes == "Yes" ||
-		yes == "Sure thing, mate! Please do carry on."
 }
