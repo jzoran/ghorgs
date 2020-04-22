@@ -88,25 +88,29 @@ func (t *Table) SortByField(field string) (*Table, error) {
 	return &tt, nil
 }
 
-func (t *Table) FindByField(field string, val string) (*Table, error) {
+// gets all records with field equals value
+func (t *Table) FindAllByField(field, val string) (*Table, error) {
 	err := t.setPivotField(field)
 	if err != nil {
 		return nil, err
 	}
 
-	keyI := sort.Search(len(t.Keys), func(i int) bool {
-		return val <= t.Records[t.Keys[i]][t.pivotField.Index]
-	})
-
-	if keyI < len(t.Keys) && val == t.Records[t.Keys[keyI]][t.pivotField.Index] {
-		key := t.Keys[keyI]
-		keys := []string{key}
-		ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
-		ret.AddRecord(key, t.Records[key])
-		return ret, nil
+	var ret *Table = nil
+	for _, key := range t.Keys {
+		if t.Records[key][t.pivotField.Index] == val {
+			if ret == nil {
+				ret = MakeTable(t.Fields)
+			}
+			ret.AddKey(key)
+			ret.AddRecord(key, t.Records[key])
+		}
 	}
 
-	return nil, fmt.Errorf("%s not found in field %s.", val, field)
+	if ret == nil {
+		return nil, fmt.Errorf("`%s` not found at `%s`", val, field)
+	}
+
+	return ret, nil
 }
 
 func (t *Table) FindAllByFieldValues(field string, vals []string) (*Table, error) {
