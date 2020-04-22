@@ -43,6 +43,9 @@ func (t *Table) ToString() string {
 		s += key + "\t"
 		line := t.Records[key]
 		for i, cell := range line {
+			if len(cell) == 0 {
+				cell = "-"
+			}
 			s += cell
 			if i < len(line)-1 {
 				s += "\t"

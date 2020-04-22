@@ -179,27 +179,27 @@ func (r *UsersResponse) AppendTable(c *Table) {
 	}
 
 	for _, user := range r.Data.Org.Members.Nodes {
-		name := "-"
+		name := ""
 		if user.Member.Name != nil {
 			name = *user.Member.Name
 		}
-		email := "-"
+		email := ""
 		if user.Member.Email != nil {
 			email = *user.Member.Email
 		}
-		company := "-"
+		company := ""
 		if user.Member.Company != nil {
 			company = *user.Member.Company
 		}
-		bio := "-"
+		bio := ""
 		if user.Member.Bio != nil {
 			bio = *user.Member.Bio
 		}
-		msg := "-"
+		msg := ""
 		if user.Member.Status != nil {
 			msg = user.Member.Status.Message
 		}
-		repos := "-"
+		repos := ""
 		if user.Member.Repos.TotalCount > 0 {
 			for i, repo := range user.Member.Repos.ReposList {
 				if i == 0 {

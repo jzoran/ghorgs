@@ -56,6 +56,9 @@ func (c *Csv) Flush() {
 func lineToString(line []string) string {
 	s := ""
 	for i, cell := range line {
+		if len(cell) == 0 {
+			cell = "-"
+		}
 		s = s + cell
 		if i < len(line)-1 {
 			s = s + "\t"
