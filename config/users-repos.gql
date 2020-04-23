@@ -1,0 +1,16 @@
+query {
+  user(login:"user-id") {
+    repositories(first: 100, orderBy: {field:NAME, direction:ASC}, affiliations:[ORGANIZATION_MEMBER], ownerAffiliations:[ORGANIZATION_MEMBER]) {
+      totalCount
+      pageInfo {hasNextPage, endCursor}
+      nodes {
+        name
+        url
+        isPrivate
+        owner {
+          login
+        }
+      }
+    }
+  }
+}

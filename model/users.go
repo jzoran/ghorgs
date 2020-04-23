@@ -30,7 +30,7 @@ var (
 		Bio:          Field{"Bio", 7},
 		Status:       Field{"Status", 8},
 		Updated:      Field{"Updated", 9},
-		Repositories: Field{"Repositories Contributed To", 10}}
+		Repositories: Field{"Accessible Repositories", 10}}
 	usersTableFieldNames = namesOf(usersTableFields.asList())
 )
 
@@ -75,8 +75,7 @@ type UserRepoNames struct {
 }
 
 type UserRepos struct {
-	TotalCount int             `json:"totalCount"`
-	ReposList  []UserRepoNames `json:"nodes"`
+	TotalCount int `json:"totalCount"`
 }
 
 type User struct {
@@ -89,7 +88,7 @@ type User struct {
 	Bio       *string     `json:"bio",omitempty`
 	Status    *UserStatus `json:"status",omitempty`
 	UpdatedAt time.Time   `json:"updatedAt"`
-	Repos     UserRepos   `json:"repositoriesContributedTo"`
+	Repos     UserRepos   `json:"repositories"`
 }
 
 type OrgMember struct {
@@ -199,16 +198,7 @@ func (r *UsersResponse) AppendTable(c *Table) {
 		if user.Member.Status != nil {
 			msg = user.Member.Status.Message
 		}
-		repos := ""
-		if user.Member.Repos.TotalCount > 0 {
-			for i, repo := range user.Member.Repos.ReposList {
-				if i == 0 {
-					repos = repo.Name
-				} else {
-					repos = repos + ", " + repo.Name
-				}
-			}
-		}
+		repos := fmt.Sprintf("%d", user.Member.Repos.TotalCount)
 
 		c.AddKey(user.Member.Id)
 		c.Records[user.Member.Id] = []string{user.Member.Login,

@@ -20,11 +20,8 @@ query ($offset:Int!) {
             message
           }
           updatedAt
-          repositoriesContributedTo (first: 20, orderBy: {field: NAME, direction: ASC}) {
+          repositories (affiliations:[ORGANIZATION_MEMBER], ownerAffiliations:[ORGANIZATION_MEMBER]) {
             totalCount
-            nodes {
-              nameWithOwner
-            }
           }
         }
       }

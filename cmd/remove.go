@@ -190,7 +190,7 @@ func (r *remover) run(c *cmds.Command, args []string) {
 
 	// 3. check by accessible repositories
 	if r.access {
-		tmp, err := projection.FindAllByField(usersFields.Repositories.Name, "")
+		tmp, err := projection.FindAllByField(usersFields.Repositories.Name, "0")
 		if err != nil {
 			fmt.Println(err.Error())
 			// allow partial results, so don't return
