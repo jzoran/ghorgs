@@ -72,18 +72,20 @@ Usage:
   Flags:
     -h, --help                  help for ghorgs
     -o, --organization string   Organizational account on GitHub analyzed.
-    -t, --token string          Security token used on Github.
-        Required GitHub scopes covered by token are:
-            - user,
-            - delete_repo,
-            - public_repo,
-            - repo,
-            - repo_deployment,
-            - repo:status,
-            - read:repo_hook,
-            - read:org,
-            - read:public_key,
-            - read:gpg_key
+    -t, --token string          Security token used on Github. Overrides the token from configuration file.
+                                Required GitHub scopes covered by a single token in the config file are:
+                                  - user,
+                                  - delete_repo,
+                                  - public_repo,
+                                  - repo,
+                                  - repo_deployment,
+                                  - repo:status,
+                                  - read:repo_hook,
+                                  - read:org,
+                                  - read:public_key,
+                                  - read:gpg_key.
+                               Individual commands don't require all the scopes, so different tokens can be
+                               used in the command line for different commands.
     -u, --user string           User name of the owner of token. (Needed with 'git clone'.)
     -v, --verbose               Toggle debug printouts.
 ```
@@ -105,17 +107,20 @@ Usage:
 
   Global Flags:
     -o, --organization string   Organizational account on GitHub analyzed.
-    -t, --token string          Security token used on Github.
-        Required GitHub scopes covered by token are:
-            - user,
-            - public_repo,
-            - repo,
-            - repo_deployment,
-            - repo:status,
-            - read:repo_hook,
-            - read:org,
-            - read:public_key,
-            - read:gpg_key
+    -t, --token string          Security token used on Github. Overrides the token from configuration file.
+                                Required GitHub scopes covered by a single token in the config file are:
+                                  - user,
+                                  - delete_repo,
+                                  - public_repo,
+                                  - repo,
+                                  - repo_deployment,
+                                  - repo:status,
+                                  - read:repo_hook,
+                                  - read:org,
+                                  - read:public_key,
+                                  - read:gpg_key.
+                               Individual commands don't require all the scopes, so different tokens can be
+                               used in the command line for different commands.
     -u, --user string           User name of the owner of token. (Needed with 'git clone'.)
     -v, --verbose               Toggle debug printouts.
 ```
@@ -152,18 +157,20 @@ Usage:
 
   Global Flags:
     -o, --organization string   Organizational account on GitHub analyzed.
-    -t, --token string          Security token used on Github.
-        Required GitHub scopes covered by token are:
-            - user,
-            - delete_repo,
-            - public_repo,
-            - repo,
-            - repo_deployment,
-            - repo:status,
-            - read:repo_hook,
-            - read:org,
-            - read:public_key,
-            - read:gpg_key
+    -t, --token string          Security token used on Github. Overrides the token from configuration file.
+                                Required GitHub scopes covered by a single token in the config file are:
+                                  - user,
+                                  - delete_repo,
+                                  - public_repo,
+                                  - repo,
+                                  - repo_deployment,
+                                  - repo:status,
+                                  - read:repo_hook,
+                                  - read:org,
+                                  - read:public_key,
+                                  - read:gpg_key.
+                               Individual commands don't require all the scopes, so different tokens can be
+                               used in the command line for different commands.
     -u, --user string           User name of the owner of token. (Needed with 'git clone'.)
     -v, --verbose               Toggle debug printouts.
 ```
@@ -186,18 +193,20 @@ Usage:
 
   Global Flags:
     -o, --organization string   Organizational account on GitHub analyzed.
-    -t, --token string          Security token used on Github.
-        Required GitHub scopes covered by token are:
-            - user,
-            - delete_repo,
-            - public_repo,
-            - repo,
-            - repo_deployment,
-            - repo:status,
-            - read:repo_hook,
-            - read:org,
-            - read:public_key,
-            - read:gpg_key
+    -t, --token string          Security token used on Github. Overrides the token from configuration file.
+                                Required GitHub scopes covered by a single token in the config file are:
+                                  - user,
+                                  - delete_repo,
+                                  - public_repo,
+                                  - repo,
+                                  - repo_deployment,
+                                  - repo:status,
+                                  - read:repo_hook,
+                                  - read:org,
+                                  - read:public_key,
+                                  - read:gpg_key.
+                               Individual commands don't require all the scopes, so different tokens can be
+                               used in the command line for different commands.
     -u, --user string           User name of the owner of token. (Needed with 'git clone'.)
     -v, --verbose               Toggle debug printouts.
 ```
