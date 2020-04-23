@@ -15,10 +15,10 @@ query ($offset:Int!) {
           email
           company
           url
-          bio
-          status {
-            message
-          }
+          # bio
+          # status {
+          #   message
+          # }
           updatedAt
           repositories (affiliations:[ORGANIZATION_MEMBER], ownerAffiliations:[ORGANIZATION_MEMBER]) {
             totalCount

@@ -27,10 +27,8 @@ var (
 		Email:        Field{"Email", 4},
 		Company:      Field{"Company", 5},
 		Url:          Field{"Url", 6},
-		Bio:          Field{"Bio", 7},
-		Status:       Field{"Status", 8},
-		Updated:      Field{"Updated", 9},
-		Repositories: Field{"Accessible Repositories", 10}}
+		Updated:      Field{"Updated", 7},
+		Repositories: Field{"Accessible Repositories", 8}}
 	usersTableFieldNames = namesOf(usersTableFields.asList())
 )
 
@@ -42,8 +40,6 @@ type UsersFields struct {
 	Email        Field
 	Company      Field
 	Url          Field
-	Bio          Field
-	Status       Field
 	Updated      Field
 	Repositories Field
 }
@@ -56,8 +52,6 @@ func (f *UsersFields) asList() []Field {
 		usersTableFields.Email,
 		usersTableFields.Company,
 		usersTableFields.Url,
-		usersTableFields.Bio,
-		usersTableFields.Status,
 		usersTableFields.Updated,
 		usersTableFields.Repositories}
 }
@@ -79,16 +73,14 @@ type UserRepos struct {
 }
 
 type User struct {
-	Id        string      `json:"id"`
-	Login     string      `json:"login"`
-	Name      *string     `json:"name",omitempty`
-	Email     *string     `json:"email",omitempty`
-	Company   *string     `json:"company",omitempty`
-	Url       string      `json:"url"`
-	Bio       *string     `json:"bio",omitempty`
-	Status    *UserStatus `json:"status",omitempty`
-	UpdatedAt time.Time   `json:"updatedAt"`
-	Repos     UserRepos   `json:"repositories"`
+	Id        string    `json:"id"`
+	Login     string    `json:"login"`
+	Name      *string   `json:"name",omitempty`
+	Email     *string   `json:"email",omitempty`
+	Company   *string   `json:"company",omitempty`
+	Url       string    `json:"url"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	Repos     UserRepos `json:"repositories"`
 }
 
 type OrgMember struct {
@@ -190,14 +182,6 @@ func (r *UsersResponse) AppendTable(c *Table) {
 		if user.Member.Company != nil {
 			company = *user.Member.Company
 		}
-		bio := ""
-		if user.Member.Bio != nil {
-			bio = *user.Member.Bio
-		}
-		msg := ""
-		if user.Member.Status != nil {
-			msg = user.Member.Status.Message
-		}
 		repos := fmt.Sprintf("%d", user.Member.Repos.TotalCount)
 
 		c.AddKey(user.Member.Id)
@@ -208,8 +192,6 @@ func (r *UsersResponse) AppendTable(c *Table) {
 			email,
 			company,
 			user.Member.Url,
-			bio,
-			msg,
 			fmt.Sprintf("%s", user.Member.UpdatedAt),
 			repos}
 	}
