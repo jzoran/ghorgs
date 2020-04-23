@@ -23,10 +23,17 @@ func initFlags(c *cmds.Command, args []string) {
 	gnet.Conf.Token = flags.GetString("token")
 	gnet.Conf.Organization = flags.GetString("organization")
 	utils.Debug.Verbose = flags.GetBool("verbose")
+	utils.Debug.DryRun = flags.GetBool("dry-run")
 }
 
 func init() {
 	cmds.OnInitialize(initConfig)
+
+	rootCmd.PersistentFlags().BoolP("dry-run",
+		"d",
+		false,
+		"Perform a dry run of the command without actually executing it in the end.")
+	flags.BindPFlag("dry-run", rootCmd.PersistentFlags().Lookup("dry-run"))
 
 	rootCmd.PersistentFlags().BoolP("verbose",
 		"v",

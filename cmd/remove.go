@@ -229,22 +229,26 @@ func (r *remover) run(c *cmds.Command, args []string) {
 				"members",
 				userLogin),
 			gnet.Conf.Token)
-		resp, status := rmRequest.Execute()
-		if utils.Debug.Verbose {
-			log.Print(resp)
-		}
-		// check response for error:
-		// - `Status: 204 No Content` is OK
-		// - `Status: 403 Forbidden` - abort since Token doesn't have Delete rights
-		// - Any other code, continue
-		if status.Code == http.StatusForbidden {
-			fmt.Println("Error! HttpResponse:", status.Status)
-			fmt.Println("Token is not allowed to delete repository.")
-			return
-		}
-		if status.Code != http.StatusOK && status.Code != http.StatusNoContent {
-			fmt.Println("Error! HttpResponse:", status.Status)
-			continue
+		if utils.Debug.DryRun {
+			fmt.Println(fmt.Sprintf("Executing %s %s", rmRequest.Url, rmRequest.Method))
+		} else {
+			resp, status := rmRequest.Execute()
+			if utils.Debug.Verbose {
+				log.Print(resp)
+			}
+			// check response for error:
+			// - `Status: 204 No Content` is OK
+			// - `Status: 403 Forbidden` - abort since Token doesn't have Delete rights
+			// - Any other code, continue
+			if status.Code == http.StatusForbidden {
+				fmt.Println("Error! HttpResponse:", status.Status)
+				fmt.Println("Token is not allowed to delete repository.")
+				return
+			}
+			if status.Code != http.StatusOK && status.Code != http.StatusNoContent {
+				fmt.Println("Error! HttpResponse:", status.Status)
+				continue
+			}
 		}
 	}
 }

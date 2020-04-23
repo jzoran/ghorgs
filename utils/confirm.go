@@ -6,6 +6,12 @@ package utils
 import "fmt"
 
 func GetUserConfirmation() bool {
+	if Debug.DryRun {
+		fmt.Println("This is a dry-run. No data will actually be modified on GitHub and only the " +
+			"commands will be print out.")
+	} else {
+		fmt.Println("ATTN: This action may be irreversible.")
+	}
 	fmt.Println("Are you sure you want to continue? (y/N):")
 	var yes string
 	n, err := fmt.Scanf("%s", &yes)

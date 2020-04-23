@@ -70,6 +70,7 @@ Usage:
     version     prints version of ghorgs tool
 
   Flags:
+    -d, --dry-run               Perform a dry run of the command without actually executing it in the end.
     -h, --help                  help for ghorgs
     -o, --organization string   Organizational account on GitHub analyzed.
     -t, --token string          Security token used on Github. Overrides the token from configuration file.
@@ -106,6 +107,7 @@ Usage:
     -h, --help              help for dump
 
   Global Flags:
+    -d, --dry-run               Perform a dry run of the command without actually executing it in the end.
     -o, --organization string   Organizational account on GitHub analyzed.
     -t, --token string          Security token used on Github. Overrides the token from configuration file.
                                 Required GitHub scopes covered by a single token in the config file are:
@@ -156,6 +158,7 @@ Usage:
           "archive the repositories from --repos list if they have been inactive --since this point in time".
 
   Global Flags:
+    -d, --dry-run               Perform a dry run of the command without actually executing it in the end.
     -o, --organization string   Organizational account on GitHub analyzed.
     -t, --token string          Security token used on Github. Overrides the token from configuration file.
                                 Required GitHub scopes covered by a single token in the config file are:
@@ -192,6 +195,7 @@ Usage:
     -U, --users string   Comma separated list of users to remove. Name can contain alphanumeric and special characters '_', '.' and '-'.
 
   Global Flags:
+    -d, --dry-run               Perform a dry run of the command without actually executing it in the end.
     -o, --organization string   Organizational account on GitHub analyzed.
     -t, --token string          Security token used on Github. Overrides the token from configuration file.
                                 Required GitHub scopes covered by a single token in the config file are:
