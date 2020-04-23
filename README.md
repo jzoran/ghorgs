@@ -4,8 +4,9 @@ GitHub projects and users belonging to SonyMobile organizational account
 at github.com/SonyMobile, but is extended to work with any
 organizational account.
 
-It uses GitHub's GraphQL API to query for repositories and users belonging to
+It uses GitHub's GraphQL API (v4) to query for repositories and users belonging to
 an organization and then writes the output into a csv files.
+It uses GitHub's REST-like API (v3) to delete repositories and remove users.
 
 ## Set up
 * The project is written in go, so you have to set up go environment.
@@ -58,6 +59,7 @@ with `go mod init`, which will recreate the go.mod and go.sum files.
 
 ## Run
 Usage:
+```
   ghorgs [command]
 
   Available Commands:
@@ -84,12 +86,14 @@ Usage:
             - read:gpg_key
     -u, --user string           User name of the owner of token. (Needed with 'git clone'.)
     -v, --verbose               Toggle debug printouts.
+```
 Use "ghorgs [command] --help" for more information about a command.
 
 ### Dump command
 Dumps the requested entities into a csv file.
 
 Usage:
+```
   ghorgs dump [flags]
 
   Flags:
@@ -114,12 +118,14 @@ Usage:
             - read:gpg_key
     -u, --user string           User name of the owner of token. (Needed with 'git clone'.)
     -v, --verbose               Toggle debug printouts.
+```
 
 ### Archive command
 Remove GitHub repositories according to given criteria and archive to a given folder.
-Uses v4 API for caching, v3 API for 'delete repository' command.
+Uses v4 API for caching, v3 API for 'delete repository' operation.
 
 Usage:
+```
   ghorgs archive [flags]
 
   Flags:
@@ -160,11 +166,14 @@ Usage:
             - read:gpg_key
     -u, --user string           User name of the owner of token. (Needed with 'git clone'.)
     -v, --verbose               Toggle debug printouts.
+```
 
 ### Remove command
 Remove GitHub users according to given criteria.
+Uses v4 API for caching, v3 API for 'remove user' operation.
 
 Usage:
+```
   ghorgs remove [flags]
 
   Flags:
@@ -191,6 +200,7 @@ Usage:
             - read:gpg_key
     -u, --user string           User name of the owner of token. (Needed with 'git clone'.)
     -v, --verbose               Toggle debug printouts.
+```
 
 ## LICENSE
 Currently the tool is proprietary.
