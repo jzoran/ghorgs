@@ -77,6 +77,7 @@ func (a By) Swap(i, j int) {
 	a.Keys[i], a.Keys[j] = a.Keys[j], a.Keys[i]
 }
 
+// sort by field ascending
 func (t *Table) SortByField(field string) (*Table, error) {
 	err := t.setPivotField(field)
 	if err != nil {
@@ -192,35 +193,35 @@ func (t *Table) GreaterThanByField(field, val string) (*Table, error) {
 	return ret, nil
 }
 
-func (t *Table) Last(n int) (*Table, error) {
-	if n < 1 || n > len(t.Keys) {
-		return nil, fmt.Errorf("Out of range error.")
-	}
-
-	keys := make([]string, 0)
-	ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
-	for _, key := range t.Keys[len(t.Keys)-n:] {
-		ret.AddKey(key)
-		ret.AddRecord(key, t.Records[key])
-	}
-
-	return ret, nil
-}
-
-// func (t *Table) First(n int) (*Table, error) {
-// 	if n <= 0 || n > len(t.Keys) {
+// func (t *Table) Last(n int) (*Table, error) {
+// 	if n < 1 || n > len(t.Keys) {
 // 		return nil, fmt.Errorf("Out of range error.")
 // 	}
 
 // 	keys := make([]string, 0)
 // 	ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
-// 	for _, key := range t.Keys[:len(t.Keys)-n] {
+// 	for _, key := range t.Keys[len(t.Keys)-n:] {
 // 		ret.AddKey(key)
 // 		ret.AddRecord(key, t.Records[key])
 // 	}
 
 // 	return ret, nil
 // }
+
+func (t *Table) First(n int) (*Table, error) {
+	if n <= 0 || n > len(t.Keys) {
+		return nil, fmt.Errorf("Out of range error.")
+	}
+
+	keys := make([]string, 0)
+	ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
+	for _, key := range t.Keys[:n] {
+		ret.AddKey(key)
+		ret.AddRecord(key, t.Records[key])
+	}
+
+	return ret, nil
+}
 
 func (t *Table) setPivotField(fieldName string) error {
 	if fieldName == ID.Name {

@@ -209,7 +209,7 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 
 	if a.n > 0 {
 		// if --n set, get copy of cache with --n least active
-		projection, err = projection.Last(a.n)
+		projection, err = projection.First(a.n)
 		if err != nil {
 			panic(err)
 		}
