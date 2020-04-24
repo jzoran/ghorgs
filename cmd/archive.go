@@ -149,6 +149,10 @@ func (a *archiver) validateArgs(c *cmds.Command, args []string) error {
 		a.n = 0
 	}
 
+	if a.n == 0 && a.since == "" && len(a.names) == 0 {
+		return fmt.Errorf("No criteria for archiving provided. Exiting.")
+	}
+
 	// Verify path of out folder.
 	a.outFolder, err = c.Flags().GetString("out")
 	if err != nil {
