@@ -217,7 +217,7 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 
 	// 3. get copy of cache cut by --since flag
 	if a.since != "" {
-		projection, err = projection.GreaterThanByField(reposFields.Updated.Name, a.since)
+		projection, err = projection.LessThanByField(reposFields.Updated.Name, a.since)
 		if err != nil {
 			panic(err)
 		}

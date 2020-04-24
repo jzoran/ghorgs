@@ -157,34 +157,15 @@ func (t *Table) FindAllByFieldValues(field string, vals []string) (*Table, error
 	return ret, nil
 }
 
-// func (t *Table) LessThanByField(field, val string) (*Table, error) {
-// 	err := t.setPivotField(field)
-//  if err != nil {
-//      return nil, err
-//  }
-//
-// 	keys := make([]string, 0)
-// 	ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
-// 	for _, key := range t.Keys {
-// 		if t.Records[key][t.pivotField.Index] < val {
-// 			ret.AddKey(key)
-// 			ret.AddRecord(key, t.Records[key])
-// 		}
-// 	}
-
-// 	return ret, nil
-// }
-
-func (t *Table) GreaterThanByField(field, val string) (*Table, error) {
+func (t *Table) LessThanByField(field, val string) (*Table, error) {
 	err := t.setPivotField(field)
 	if err != nil {
 		return nil, err
 	}
 
-	keys := make([]string, 0)
-	ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
+	ret := MakeTable(t.Fields)
 	for _, key := range t.Keys {
-		if t.Records[key][t.pivotField.Index] > val {
+		if t.Records[key][t.pivotField.Index] < val {
 			ret.AddKey(key)
 			ret.AddRecord(key, t.Records[key])
 		}
@@ -192,6 +173,23 @@ func (t *Table) GreaterThanByField(field, val string) (*Table, error) {
 
 	return ret, nil
 }
+
+// func (t *Table) GreaterThanByField(field, val string) (*Table, error) {
+// 	err := t.setPivotField(field)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+//
+// 	ret := MakeTable(t.Fields}
+// 	for _, key := range t.Keys {
+// 		if t.Records[key][t.pivotField.Index] > val {
+// 			ret.AddKey(key)
+// 			ret.AddRecord(key, t.Records[key])
+// 		}
+// 	}
+
+// 	return ret, nil
+// }
 
 // func (t *Table) Last(n int) (*Table, error) {
 // 	if n < 1 || n > len(t.Keys) {
