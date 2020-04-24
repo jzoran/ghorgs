@@ -227,6 +227,11 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 		}
 	}
 
+	if len(projection.Keys) == 0 {
+		fmt.Println("There are no repositories with requested criteria.Exiting.")
+		return
+	}
+
 	// 4. display the result to the user and request confirmation
 	fmt.Println(
 		fmt.Sprintf("\nThe following repositories will be removed from GitHub and archived (%d):",
