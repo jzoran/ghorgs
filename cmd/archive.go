@@ -48,7 +48,7 @@ func init() {
 
 	archiveCmd.Flags().IntP("n",
 		"n",
-		1,
+		0,
 		`Number of repositories to archive.
 
 * If --n is used together with --since, then the result is:
@@ -108,7 +108,7 @@ func (a *archiver) validateArgs(c *cmds.Command, args []string) error {
 		panic(err)
 	}
 
-	if a.n <= 0 {
+	if a.n < 0 {
 		return fmt.Errorf("Insert --n greater than 0.")
 	}
 
