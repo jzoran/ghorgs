@@ -20,7 +20,7 @@ query ($offset:Int!) {
           #   message
           # }
           updatedAt
-          repositories (affiliations:[ORGANIZATION_MEMBER], ownerAffiliations:[ORGANIZATION_MEMBER]) {
+          repositories (affiliations:[ORGANIZATION_MEMBER], ownerAffiliations:[ORGANIZATION_MEMBER, COLLABORATOR]) {
             totalCount
           }
         }
