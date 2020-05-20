@@ -1,0 +1,1 @@
+{ "query": "query { organization ( login:\"%s\" ) { teams ( first: %d, after: \"%s\" ) { totalCount pageInfo { hasNextPage endCursor } nodes { id name url parentTeam { id name } childTeams { totalCount } repositories { totalCount } members { totalCount } invitations { totalCount } } } } }" }

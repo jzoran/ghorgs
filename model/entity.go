@@ -36,14 +36,17 @@ var (
 
 	Repos *ReposResponse
 	Users *UsersResponse
+	Teams *TeamsResponse
 )
 
 func init() {
 	Repos = &ReposResponse{}
 	Users = &UsersResponse{}
+	Teams = &TeamsResponse{}
 	EntityMap = map[string]Entity{
 		Repos.GetName(): Repos,
 		Users.GetName(): Users,
+		Teams.GetName(): Teams,
 	}
 	EntityNamesList = keysOf(EntityMap)
 }
