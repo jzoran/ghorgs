@@ -22,6 +22,7 @@ type archiver struct {
 	n         int
 	since     string
 	names     []string
+	backup    bool
 	outFolder string
 	data      map[string]*model.Table
 }
@@ -81,6 +82,11 @@ NOTE: It will be ignored if used with --repos.
 
 NOTE: --n will be ignored if used with --repos.
 `)
+
+	archiveCmd.Flags().BoolP("backup",
+		"b",
+		false,
+		"Only backup the repositories. DO NOT REMOVE them.")
 
 	archiveCmd.Flags().StringP("out",
 		"O",
@@ -151,6 +157,11 @@ func (a *archiver) validateArgs(c *cmds.Command, args []string) error {
 
 	if a.n == 0 && a.since == "" && len(a.names) == 0 {
 		return fmt.Errorf("No criteria for archiving provided. Exiting.")
+	}
+
+	a.backup, err = c.Flags().GetBool("backup")
+	if err != nil {
+		panic(err)
 	}
 
 	// Verify path of out folder.
@@ -233,8 +244,15 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 	}
 
 	// 4. display the result to the user and request confirmation
-	fmt.Println(
-		fmt.Sprintf("\nThe following repositories will be removed from GitHub and archived (%d):",
+	msg := "\nThe following repositories will be "
+	if a.backup {
+		msg += "backed up "
+	} else {
+		msg += "removed from GitHub and archived "
+	}
+
+	fmt.Println(msg +
+		fmt.Sprintf("(%d):",
 			len(projection.Keys)))
 	fmt.Println(fmt.Sprintf("%s\n", projection.ToString()))
 
@@ -281,7 +299,13 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 		//   5.3 rm clone in -O
 		fmt.Println(fmt.Sprintf("Removing %s...", clonePath))
 		os.RemoveAll(path.Join(a.outFolder, repoName))
-		//   5.4 rm repo in GitHub
+
+		//   5.4 if only backup, that's it, we're done
+		if a.backup {
+			continue
+		}
+
+		// 5.5 otherwise, rm repo in GitHub
 		rmRequest := gnet.MakeGitHubV3Request(http.MethodDelete,
 			path.Join(repos.GetName(),
 				gnet.Conf.Organization,
@@ -307,8 +331,8 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 				fmt.Println("Error! HttpResponse:", status.Status)
 				continue
 			}
-		}
-	}
+		} // dry run
+	} // for _, key := range projection.Keys {
 }
 
 func (a *archiver) dataProjectionByName() (*model.Table, error) {

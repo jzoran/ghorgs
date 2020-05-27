@@ -136,6 +136,7 @@ Usage:
   ghorgs archive [flags]
 
   Flags:
+    -b, --backup         Only backup the repositories. DO NOT REMOVE them.
     -h, --help           help for archive
     -n, --n int          Number of repositories to archive.
         * If --n is used together with --since, then the result is:
