@@ -103,7 +103,7 @@ Usage:
     -b, --by string         Name of the entity field to use for sorting the result of the dump.
         If empty, default sort on GitHub is creation date.
     -e, --entities string   'all' for full dump or comma separated list of one or more of:
-        users, repos. (default "all")
+        users, repos, teams. (default "all")
     -h, --help              help for dump
 
   Global Flags:
