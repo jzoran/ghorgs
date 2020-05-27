@@ -45,10 +45,10 @@ func init() {
 		"DO NOT ask user for confirmation. "+
 			"(Use with care, e.g. in scripts where interaction is minimal or impossible.)")
 
-	removeCmd.Flags().BoolP("2FA",
-		"A",
+	removeCmd.Flags().BoolP("MFA",
+		"m",
 		false,
-		"Remove users without 2FA set up.")
+		"Remove users without MFA set up.")
 
 	removeCmd.Flags().BoolP("company",
 		"c",

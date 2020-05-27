@@ -187,7 +187,7 @@ Usage:
   ghorgs remove [flags]
 
   Flags:
-    -A, --2FA            Remove users without 2FA set up.
+    -m, --MFA            Remove users without MFA set up.
     -a, --access         Remove users without access to any repository owned by the organization.
     -c, --company        Remove users without company affiliation.
     -h, --help           help for remove
