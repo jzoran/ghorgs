@@ -192,7 +192,7 @@ Usage:
     -c, --company        Remove users without company affiliation.
     -h, --help           help for remove
     -q, --quiet          DO NOT ask user for confirmation. (Use with care, e.g. in scripts where interaction is minimal or impossible.)
-    -U, --users string   Comma separated list of users to remove. Name can contain alphanumeric and special characters '_', '.' and '-'.
+    -r, --users string   Comma separated list of users to remove. Name can contain alphanumeric and special characters '_', '.' and '-'.
 
   Global Flags:
     -d, --dry-run               Perform a dry run of the command without actually executing it in the end.

@@ -61,7 +61,7 @@ func init() {
 		"Remove users without access to any repository owned by the organization.")
 
 	removeCmd.Flags().StringP("users",
-		"U",
+		"r",
 		"",
 		"Comma separated list of users to remove. "+
 			"Name can contain alphanumeric and special characters '_', '.' and '-'.")
