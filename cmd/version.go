@@ -1,3 +1,8 @@
+//
+// Copyright (c) 2019 Sony Mobile Communications Inc.
+// SPDX-License-Identifier: MIT
+//
+
 package cmd
 
 import (

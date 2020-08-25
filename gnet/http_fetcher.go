@@ -1,5 +1,7 @@
+//
 // Copyright (c) 2019 Sony Mobile Communications Inc.
-// All rights reserved.
+// SPDX-License-Identifier: MIT
+//
 
 package gnet
 

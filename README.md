@@ -266,5 +266,12 @@ Usage:
     -v, --verbose               Toggle debug printouts.
 ```
 
+## Contributing
+Thanks for wishing to contribute to this small project. Please feel free to submit an issue or create a
+Merge Request.
+
+If it's your first code contribution, please add your name to [AUTHORS](AUTHORS) file in alphabetical
+order.
+
 ## LICENSE
-Currently the tool is proprietary.
+Licensed under the [LICENSE](LICENSE).

@@ -1,7 +1,9 @@
+//
 // Copyright (c) 2019 Sony Mobile Communications Inc.
-// All rights reserved.
+// SPDX-License-Identifier: MIT
 //
 // (inspired by snippet from https://gist.github.com/mimoo/25fc9716e0f1353791f5908f94d6e726)
+//
 
 package utils
 
