@@ -148,7 +148,8 @@ func (a *archiver) validateArgs(c *cmds.Command, args []string) error {
 			return err
 		}
 		if !matched {
-			return fmt.Errorf("--repos can only contain a comma separated list of repository names written in ascii alpha-numeric characters ([._-] are allowed.).")
+			return fmt.Errorf("--repos can only contain a comma separated list of repository names " +
+				"written in ascii alpha-numeric characters ([._-] are allowed.).")
 		}
 
 		a.names = strings.Split(repos, ",")
