@@ -281,9 +281,9 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 		}
 		//   5.1 tar.gz the clone in -O
 		clonePath := path.Join(a.outFolder, repoName)
-		destArchive := path.Join(repoName+".tar.gz", a.outFolder)
+		destArchive := clonePath + ".tar.gz"
 		fmt.Println(fmt.Sprintf("Creating archive '%s' in '%s'...",
-			destArchive, a.outFolder))
+			repoName+".tar.gz", a.outFolder))
 		err = utils.TarGz(destArchive, clonePath)
 		if err != nil {
 			fmt.Println(err.Error())
