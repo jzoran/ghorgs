@@ -14,7 +14,16 @@ import (
 	"path/filepath"
 )
 
-func TarGz(dest, src string) error {
+// TarGz creates a tar.gz archive from a given path.
+// The archive uses `src` path to create a tar.gz at src + ".tar.gz",
+// e.g. /tmp/folder will have correspoding /tmp/folder.tar.gz
+// name paramter determines that the paths in archive are relative
+// to name, e.g. /tmp/folder/file1.txt in the archive will have
+// path as "name/file1.txt" instead of absolute path "/tmp/folder/file1.txt".
+// This is usefull when unpacking the archive on an arbitrary
+// machine that doesn't necesserily have the /tmp/folder path.
+func TarGz(name, src string) error {
+	dest := src + ".tar.gz"
 	f, err := os.Create(dest)
 	if err != nil {
 		return fmt.Errorf("Could not create %s. Error! %s", dest, err.Error())
@@ -50,7 +59,17 @@ func TarGz(dest, src string) error {
 
 		// must provide real name
 		// (see https://golang.org/src/archive/tar/common.go?#L626)
-		h.Name = filepath.ToSlash(f)
+		// and then calculate relative path
+		relFilePath := filepath.ToSlash(f)
+		if filepath.IsAbs(src) {
+			relFilePath, err = filepath.Rel(src, f)
+			if err != nil {
+				return err
+			}
+			relFilePath = filepath.Join(name, relFilePath)
+			fmt.Printf("File to add: %s", relFilePath)
+		}
+		h.Name = relFilePath
 		err = tw.WriteHeader(h)
 		if err != nil {
 			return fmt.Errorf("Could not write header for '%s'. Error! %s",
@@ -72,7 +91,11 @@ func TarGz(dest, src string) error {
 	})
 }
 
-func TargzVerify(dest, src string) error {
+// TargzVerify double checks that the files on src path are indeed
+// present in the src.tar.gz archive with content path relative to
+// name.
+func TargzVerify(name, src string) error {
+	dest := src + ".tar.gz"
 	ar, err := os.Open(dest)
 	if err != nil {
 		return fmt.Errorf("Could not open '%s' for reading. Error! %s",
@@ -86,7 +109,15 @@ func TargzVerify(dest, src string) error {
 			return fmt.Errorf("Could not traverse '%s'. Error! %s",
 				f, err.Error())
 		}
-		fimap[f] = fi
+		relFilePath := filepath.ToSlash(f)
+		if filepath.IsAbs(src) {
+			relFilePath, err = filepath.Rel(src, f)
+			if err != nil {
+				return err
+			}
+			relFilePath = filepath.Join(name, relFilePath)
+		}
+		fimap[relFilePath] = fi
 		return nil
 	})
 	if err != nil {

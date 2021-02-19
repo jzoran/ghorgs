@@ -281,17 +281,16 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 		}
 		//   5.1 tar.gz the clone in -O
 		clonePath := path.Join(a.outFolder, repoName)
-		destArchive := clonePath + ".tar.gz"
 		fmt.Println(fmt.Sprintf("Creating archive '%s' in '%s'...",
 			repoName+".tar.gz", a.outFolder))
-		err = utils.TarGz(destArchive, clonePath)
+		err = utils.TarGz(repoName, clonePath)
 		if err != nil {
 			fmt.Println(err.Error())
 			continue
 		}
 		//   5.2 compare tar -tvf with clone (compare size?)
-		fmt.Println(fmt.Sprintf("Archive '%s' created. Verifying...", destArchive))
-		err = utils.TargzVerify(destArchive, clonePath)
+		fmt.Println(fmt.Sprintf("Archive '%s' created. Verifying...", repoName+".tar.gz"))
+		err = utils.TargzVerify(repoName, clonePath)
 		if err != nil {
 			fmt.Println(err.Error())
 			continue
