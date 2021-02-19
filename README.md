@@ -64,6 +64,7 @@ Usage:
 
   Available Commands:
     archive     Archive GitHub repositories according to given criteria.
+    backup      Backup GitHub repositories according to given criteria.
     dump        Dumps the requested entities into a csv file.
     help        Help about any command
     remove      Remove GitHub users according to given criteria.
@@ -136,7 +137,6 @@ Usage:
   ghorgs archive [flags]
 
   Flags:
-    -b, --backup         Only backup the repositories. DO NOT REMOVE them.
     -h, --help           help for archive
     -n, --n int          Number of repositories to archive.
         * If --n is used together with --since, then the result is:
@@ -157,6 +157,56 @@ Usage:
           "the number --n of repositories to archive --since point in time - whichever comes first."
         * If --since is used together with --repos, then the result is:
           "archive the repositories from --repos list if they have been inactive --since this point in time".
+
+  Global Flags:
+    -d, --dry-run               Perform a dry run of the command without actually executing it in the end.
+    -o, --organization string   Organizational account on GitHub analyzed.
+    -t, --token string          Security token used on Github. Overrides the token from configuration file.
+                                Required GitHub scopes covered by a single token in the config file are:
+                                  - user,
+                                  - delete_repo,
+                                  - public_repo,
+                                  - repo,
+                                  - repo_deployment,
+                                  - repo:status,
+                                  - read:repo_hook,
+                                  - read:org,
+                                  - read:public_key,
+                                  - read:gpg_key.
+                               Individual commands don't require all the scopes, so different tokens can be
+                               used in the command line for different commands.
+    -u, --user string           User name of the owner of token. (Needed with 'git clone'.)
+    -v, --verbose               Toggle debug printouts.
+```
+
+### Backup command
+Download GitHub repositories according to given criteria and save a tar.gz file to a given folder.
+
+Usage:
+```
+  ghorgs backup [flags]
+
+  Flags:
+    -h, --help           help for archive
+    -n, --n int          Number of repositories to backup.
+        * If --n is used together with --since, then the result is:
+          "the number --n of repositories to backup --since point in time - whichever comes first."
+        * If used alone, then the result is:
+          "the most active number of repositories to backup".
+        NOTE: It will be ignored if used with --repos.
+        (default 1)
+    -O, --out string     Output folder where archives of repositories are recorded. (default ".")
+    -q, --quiet          DO NOT ask user for confirmation.(Use with care, e.g. in scripts where interaction is minimal or impossible.)
+    -r, --repos string   Comma separated list of repositories to backup.
+        * Name can contain alphanumeric and special characters '_', '.' and '-'.
+        * If --repos is used with --since, then the result is:
+          "back up the repositories from --repos list if they have been active --since this point in time.
+        NOTE: --n will be ignored if used with --repos.
+    -s, --since string   Backup repositories active since this date (YYYY-MM-DD).
+        * If --since is used together with --n, then the result is:
+          "the number --n of repositories to backup --since point in time - whichever comes first."
+        * If --since is used together with --repos, then the result is:
+          "backup the repositories from --repos list if they have been active --since this point in time".
 
   Global Flags:
     -d, --dry-run               Perform a dry run of the command without actually executing it in the end.

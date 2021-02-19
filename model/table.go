@@ -174,37 +174,37 @@ func (t *Table) LessThanByField(field, val string) (*Table, error) {
 	return ret, nil
 }
 
-// func (t *Table) GreaterThanByField(field, val string) (*Table, error) {
-// 	err := t.setPivotField(field)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-//
-// 	ret := MakeTable(t.Fields}
-// 	for _, key := range t.Keys {
-// 		if t.Records[key][t.pivotField.Index] > val {
-// 			ret.AddKey(key)
-// 			ret.AddRecord(key, t.Records[key])
-// 		}
-// 	}
+func (t *Table) GreaterThanByField(field, val string) (*Table, error) {
+	err := t.setPivotField(field)
+	if err != nil {
+		return nil, err
+	}
 
-// 	return ret, nil
-// }
+	ret := MakeTable(t.Fields)
+	for _, key := range t.Keys {
+		if t.Records[key][t.pivotField.Index] > val {
+			ret.AddKey(key)
+			ret.AddRecord(key, t.Records[key])
+		}
+	}
 
-// func (t *Table) Last(n int) (*Table, error) {
-// 	if n < 1 || n > len(t.Keys) {
-// 		return nil, fmt.Errorf("Out of range error.")
-// 	}
+	return ret, nil
+}
 
-// 	keys := make([]string, 0)
-// 	ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
-// 	for _, key := range t.Keys[len(t.Keys)-n:] {
-// 		ret.AddKey(key)
-// 		ret.AddRecord(key, t.Records[key])
-// 	}
+func (t *Table) Last(n int) (*Table, error) {
+	if n < 1 || n > len(t.Keys) {
+		return nil, fmt.Errorf("Out of range error.")
+	}
 
-// 	return ret, nil
-// }
+	keys := make([]string, 0)
+	ret := &Table{Records: nil, Keys: keys, Fields: t.Fields}
+	for _, key := range t.Keys[len(t.Keys)-n:] {
+		ret.AddKey(key)
+		ret.AddRecord(key, t.Records[key])
+	}
+
+	return ret, nil
+}
 
 func (t *Table) First(n int) (*Table, error) {
 	if n <= 0 || n > len(t.Keys) {
