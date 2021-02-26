@@ -6,7 +6,6 @@
 package model
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"sort"
@@ -39,7 +38,7 @@ func (t *Table) AddRecord(key string, record []string) {
 	t.Records[key] = record
 }
 
-func (t *Table) ToString() string {
+func (t *Table) String() string {
 	var s string
 	for id, key := range t.Keys {
 		s += key + "\t"
@@ -62,7 +61,7 @@ func (t *Table) ToString() string {
 }
 
 func (t *Table) Log() {
-	log.Print(t.ToString() + "\n")
+	log.Println(t)
 }
 
 // sort interface + method
@@ -98,7 +97,7 @@ func (t *Table) FindAllByField(field, val string) (*Table, error) {
 		return nil, err
 	}
 
-	var ret *Table = nil
+	var ret *Table
 	for _, key := range t.Keys {
 		if t.Records[key][t.pivotField.Index] == val {
 			if ret == nil {
@@ -127,7 +126,7 @@ func (t *Table) FindAllByFieldValues(field string, vals []string) (*Table, error
 		valsmap[val] = 0
 	}
 
-	var ret *Table = nil
+	var ret *Table
 	for _, key := range t.Keys {
 		val := t.Records[key][t.pivotField.Index]
 		if _, ok := valsmap[val]; ok {
@@ -148,7 +147,7 @@ func (t *Table) FindAllByFieldValues(field string, vals []string) (*Table, error
 	for k, v := range valsmap {
 		if v == 0 {
 			ok = false
-			fmt.Println(fmt.Sprintf("`%s` not found in `%s`", k, field))
+			fmt.Printf("`%s` not found in `%s`\n", k, field)
 		}
 	}
 
@@ -238,7 +237,7 @@ func (t *Table) setPivotField(fieldName string) error {
 	}
 
 	if t.pivotField == INVALID_FIELD {
-		return errors.New(fmt.Sprintf("Invalid search field: %s\n", fieldName))
+		return fmt.Errorf("Invalid search field: %s\n", fieldName)
 	}
 
 	return nil

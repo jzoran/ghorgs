@@ -14,6 +14,9 @@ import (
 	"net/http"
 )
 
+// Cache takes a list of entities represented with Entity interface,
+// queries GitHub for the data for those entities and stores the
+// result of the query in a Table (or returns an error).
 func Cache(request []model.Entity) (map[string]*model.Table, error) {
 	result := make(map[string]*model.Table, len(request))
 	for _, entity := range request {
@@ -40,7 +43,7 @@ func Cache(request []model.Entity) (map[string]*model.Table, error) {
 
 		counter := req.GetCount()
 		if utils.Debug.Verbose {
-			log.Print(entity.ToString())
+			log.Print(entity)
 		} else {
 			if counter <= entity.GetTotal() {
 				fmt.Printf("\n%s: %d/%d", entity.GetName(), counter, entity.GetTotal())
@@ -61,7 +64,7 @@ func Cache(request []model.Entity) (map[string]*model.Table, error) {
 			entity.FromJsonBuffer(resp)
 			entity.AppendTable(t)
 			if utils.Debug.Verbose {
-				log.Print(entity.ToString())
+				log.Print(entity)
 			} else {
 				counter += req.GetCount()
 				if counter <= entity.GetTotal() {

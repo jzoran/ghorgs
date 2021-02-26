@@ -21,7 +21,7 @@ const (
 
 var (
 	reposTableFields = &RepositoryFields{
-		//&Field{"Id", -1} // default for table as key for map of Records
+		// &Field{"Id", -1} // default for table as key for map of Records
 		Name:      Field{"Name", 0},
 		Type:      Field{"Type", 1},
 		Url:       Field{"Url", 2},
@@ -133,7 +133,7 @@ func (r *ReposResponse) GetNext() string {
 	return r.Data.Org.Repos.PageInfo.End
 }
 
-func (r *ReposResponse) ToString() string {
+func (r *ReposResponse) String() string {
 	s, err := json.Marshal(r)
 	if err != nil {
 		panic(err)
@@ -157,8 +157,8 @@ func (r *ReposResponse) AppendTable(c *Table) {
 			isPrivate,
 			repo.Url,
 			fmt.Sprintf("%d", repo.DiskUsage),
-			fmt.Sprintf("%s", repo.UpdatedAt),
-			fmt.Sprintf("%s", repo.PushedAt)}
+			repo.UpdatedAt.String(),
+			repo.PushedAt.String()}
 	}
 }
 

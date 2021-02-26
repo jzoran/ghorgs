@@ -5,9 +5,11 @@
 
 package utils
 
-func StringInSlice(s string, list []string) bool {
-	for _, item := range list {
-		if s == item {
+// StringInSlice looks for a string `needle` in slice `haystack` and returns true
+// if successful and false otherwise.
+func StringInSlice(needle string, haystack []string) bool {
+	for _, item := range haystack {
+		if needle == item {
 			return true
 		}
 	}

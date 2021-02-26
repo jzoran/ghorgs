@@ -36,6 +36,7 @@ func makeQuery(jsonFile string, organization string) QueryBase {
 	if err != nil {
 		panic(err)
 	}
+
 	return QueryBase{organization,
 		gnet.Conf.PerPage,
 		fmt.Sprintf(string(bytes), organization, gnet.Conf.PerPage)}

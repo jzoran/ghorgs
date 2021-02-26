@@ -21,6 +21,10 @@ func MakeCsv(filename string) *Csv {
 	return &Csv{filename, data}
 }
 
+func (c *Csv) Log() {
+	c.Data.Log()
+}
+
 func (c *Csv) Flush() {
 	var f *os.File
 
@@ -61,15 +65,11 @@ func lineToString(line []string) string {
 		if len(cell) == 0 {
 			cell = "-"
 		}
-		s = s + cell
+		s += cell
 		if i < len(line)-1 {
-			s = s + "\t"
+			s += "\t"
 		}
 	}
 
 	return s
-}
-
-func (c *Csv) Log() {
-	c.Data.Log()
 }

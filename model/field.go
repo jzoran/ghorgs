@@ -19,12 +19,12 @@ var (
 	// Since a single record in Table.Records is
 	// a slice of strings with slice indices mapping
 	// exactly to fields (excluding "Id"), these
-	// fields are indexed from 0 to len(record).
+	// fields are indexed from 0 to len(record)-1.
 	// "Id" field itself is a key for that record
 	// (and not part of the records slice), so we
 	// give "Id" index -1 by convention.
-	INVALID_FIELD Field = Field{"INVALID_FIELD", -2}
-	ID            Field = Field{"Id", -1}
+	INVALID_FIELD = Field{"INVALID_FIELD", -2}
+	ID            = Field{"Id", -1}
 )
 
 func namesOf(fields []Field) []string {

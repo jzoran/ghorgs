@@ -90,7 +90,6 @@ NOTE: --n will be ignored if used with --repos.
 		"Output folder where archives of repositories are recorded.")
 
 	rootCmd.AddCommand(archiveCmd)
-
 }
 
 func (a *archiver) addCache(c map[string]*model.Table) {
@@ -169,7 +168,6 @@ func (a *archiver) validateArgs(c *cmds.Command, args []string) error {
 }
 
 func (a *archiver) run(c *cmds.Command, args []string) {
-
 	if gnet.Conf.User == "" || gnet.Conf.Token == "" {
 		fmt.Println("Error! Invalid credentials.")
 		return
@@ -178,7 +176,7 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 	// 0. get cache for repos
 	ca, err := Cache([]model.Entity{repos})
 	if err != nil {
-		fmt.Println("Error! %s", err.Error())
+		fmt.Println("Error!", err.Error())
 		return
 	}
 
@@ -237,10 +235,8 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 
 	// 4. display the result to the user and request confirmation
 	msg := "\nThe following repositories will be removed from GitHub and archived "
-	fmt.Println(msg +
-		fmt.Sprintf("(%d):",
-			len(projection.Keys)))
-	fmt.Println(fmt.Sprintf("%s\n", projection.ToString()))
+	fmt.Printf(msg+"(%d):\n", len(projection.Keys))
+	fmt.Printf("%s\n", projection)
 
 	if !a.quiet && !utils.GetUserConfirmation() {
 		return
@@ -257,24 +253,26 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 			fmt.Println(err.Error())
 			continue
 		}
-		fmt.Println(fmt.Sprintf("Cloning `%s` to `%s` ...", rawurl, a.outFolder))
+		fmt.Printf("Cloning `%s` to `%s` ...\n", rawurl, a.outFolder)
 		repoName := projection.Records[key][reposFields.Name.Index]
 		err = utils.GitClone(url, a.outFolder, repoName)
 		if err != nil {
 			fmt.Println(err.Error())
 			continue
 		}
+
 		//   5.1 tar.gz the clone in -O
 		clonePath := path.Join(a.outFolder, repoName)
-		fmt.Println(fmt.Sprintf("Creating archive '%s' in '%s'...",
-			repoName+".tar.gz", a.outFolder))
+		fmt.Printf("Creating archive '%s' in '%s'...\n",
+			repoName+".tar.gz", a.outFolder)
 		err = utils.TarGz(repoName, clonePath)
 		if err != nil {
 			fmt.Println(err.Error())
 			continue
 		}
+
 		//   5.2 compare tar -tvf with clone (compare size?)
-		fmt.Println(fmt.Sprintf("Archive '%s' created. Verifying...", repoName+".tar.gz"))
+		fmt.Printf("Archive '%s' created. Verifying...\n", repoName+".tar.gz")
 		err = utils.TargzVerify(repoName, clonePath)
 		if err != nil {
 			fmt.Println(err.Error())
@@ -282,7 +280,7 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 		}
 
 		//   5.3 rm clone in -O
-		fmt.Println(fmt.Sprintf("Removing %s...", clonePath))
+		fmt.Printf("Removing %s...\n", clonePath)
 		os.RemoveAll(path.Join(a.outFolder, repoName))
 
 		// 5.4 rm repo in GitHub
@@ -292,7 +290,7 @@ func (a *archiver) run(c *cmds.Command, args []string) {
 				repoName),
 			gnet.Conf.Token)
 		if utils.Debug.DryRun {
-			fmt.Println(fmt.Sprintf("Executing: %s %s ", rmRequest.Url, rmRequest.Method))
+			fmt.Printf("Executing: %s %s \n", rmRequest.Url, rmRequest.Method)
 		} else {
 			resp, status := rmRequest.Execute()
 			if utils.Debug.Verbose {

@@ -6,6 +6,7 @@
 package main
 
 import (
+	"fmt"
 	"ghorgs/cmd"
 	"log"
 	"os"
@@ -16,5 +17,7 @@ func init() {
 }
 
 func main() {
-	cmd.Execute()
+	if err := cmd.Execute(); err != nil {
+		fmt.Println(err)
+	}
 }

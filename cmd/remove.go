@@ -69,7 +69,6 @@ func init() {
 			"Name can contain alphanumeric and special characters '_', '.' and '-'.")
 
 	rootCmd.AddCommand(removeCmd)
-
 }
 
 func (r *remover) addCache(c map[string]*model.Table) {
@@ -125,7 +124,6 @@ func (r *remover) validateArgs(c *cmds.Command, args []string) error {
 }
 
 func (r *remover) run(c *cmds.Command, args []string) {
-
 	if gnet.Conf.User == "" || gnet.Conf.Token == "" {
 		fmt.Println("Error! Invalid credentials.")
 		return
@@ -134,7 +132,7 @@ func (r *remover) run(c *cmds.Command, args []string) {
 	// 0. get cache for users
 	ca, err := Cache([]model.Entity{users})
 	if err != nil {
-		fmt.Println("Error! %s", err.Error())
+		fmt.Println("Error!", err.Error())
 		return
 	}
 
@@ -211,10 +209,9 @@ func (r *remover) run(c *cmds.Command, args []string) {
 	}
 
 	// 4. display the result to the user and request confirmation
-	fmt.Println(
-		fmt.Sprintf("\nThe following users will be removed from the organization (%d):",
-			len(projection.Keys)))
-	fmt.Println(fmt.Sprintf("%s\n", projection.ToString()))
+	fmt.Printf("\nThe following users will be removed from the organization (%d):\n",
+		len(projection.Keys))
+	fmt.Printf("%s\n", projection)
 
 	if !r.quiet && !utils.GetUserConfirmation() {
 		return
@@ -232,7 +229,7 @@ func (r *remover) run(c *cmds.Command, args []string) {
 				userLogin),
 			gnet.Conf.Token)
 		if utils.Debug.DryRun {
-			fmt.Println(fmt.Sprintf("Executing %s %s", rmRequest.Url, rmRequest.Method))
+			fmt.Printf("Executing %s %s\n", rmRequest.Url, rmRequest.Method)
 		} else {
 			resp, status := rmRequest.Execute()
 			if utils.Debug.Verbose {

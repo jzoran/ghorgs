@@ -89,7 +89,6 @@ NOTE: --n will be ignored if used with --repos.
 		"Output folder where archives of repositories are recorded.")
 
 	rootCmd.AddCommand(backupCmd)
-
 }
 
 func (b *backuper) addCache(c map[string]*model.Table) {
@@ -169,7 +168,6 @@ func (b *backuper) validateArgs(c *cmds.Command, args []string) error {
 }
 
 func (b *backuper) run(c *cmds.Command, args []string) {
-
 	if gnet.Conf.User == "" || gnet.Conf.Token == "" {
 		fmt.Println("Error! Invalid credentials.")
 		return
@@ -178,7 +176,7 @@ func (b *backuper) run(c *cmds.Command, args []string) {
 	// 0. get cache for repos
 	ca, err := Cache([]model.Entity{backRepos})
 	if err != nil {
-		fmt.Println("Error! %s", err.Error())
+		fmt.Println("Error!", err.Error())
 		return
 	}
 
@@ -237,10 +235,8 @@ func (b *backuper) run(c *cmds.Command, args []string) {
 
 	// 4. display the result to the user and request confirmation
 	msg := "\nThe following repositories will be backed up "
-	fmt.Println(msg +
-		fmt.Sprintf("(%d):",
-			len(projection.Keys)))
-	fmt.Println(fmt.Sprintf("%s\n", projection.ToString()))
+	fmt.Printf(msg+"(%d):\n", len(projection.Keys))
+	fmt.Printf("%s\n", projection)
 
 	if !b.quiet && !utils.GetUserConfirmation() {
 		return
@@ -257,24 +253,26 @@ func (b *backuper) run(c *cmds.Command, args []string) {
 			fmt.Println(err.Error())
 			continue
 		}
-		fmt.Println(fmt.Sprintf("Cloning `%s` to `%s` ...", rawurl, b.outFolder))
+		fmt.Printf("Cloning `%s` to `%s` ...\n", rawurl, b.outFolder)
 		repoName := projection.Records[key][backReposFields.Name.Index]
 		err = utils.GitClone(url, b.outFolder, repoName)
 		if err != nil {
 			fmt.Println(err.Error())
 			continue
 		}
+
 		//   5.1 tar.gz the clone in -O
 		clonePath := path.Join(b.outFolder, repoName)
-		fmt.Println(fmt.Sprintf("Creating archive '%s' in '%s'...",
-			repoName+".tar.gz", b.outFolder))
+		fmt.Printf("Creating archive '%s' in '%s'...\n",
+			repoName+".tar.gz", b.outFolder)
 		err = utils.TarGz(repoName, clonePath)
 		if err != nil {
 			fmt.Println(err.Error())
 			continue
 		}
+
 		//   5.2 compare tar -tvf with clone (compare size?)
-		fmt.Println(fmt.Sprintf("Archive '%s' created. Verifying...", repoName+".tar.gz"))
+		fmt.Printf("Archive '%s' created. Verifying...\n", repoName+".tar.gz")
 		err = utils.TargzVerify(repoName, clonePath)
 		if err != nil {
 			fmt.Println(err.Error())
@@ -282,7 +280,7 @@ func (b *backuper) run(c *cmds.Command, args []string) {
 		}
 
 		//   5.3 rm clone in -O
-		fmt.Println(fmt.Sprintf("Removing %s...", clonePath))
+		fmt.Printf("Removing %s...\n", clonePath)
 		os.RemoveAll(path.Join(b.outFolder, repoName))
 	} // for _, key := range projection.Keys {
 }

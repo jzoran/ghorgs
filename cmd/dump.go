@@ -33,7 +33,7 @@ func init() {
 		"e",
 		"all",
 		"'all' for full dump or comma separated list of one or more of:\n"+
-			"    "+sliceToStr(model.EntityNamesList)+".")
+			"    "+sliceToStr(model.EntityNamesList())+".")
 
 	dumpCmd.Flags().StringP("by",
 		"b",
@@ -73,7 +73,7 @@ func (d *dumper) validateArgs(c *cmds.Command, args []string) error {
 func (d *dumper) run(c *cmds.Command, args []string) {
 	ca, err := Cache(d.entities)
 	if err != nil {
-		fmt.Println("Error! %s", err.Error())
+		fmt.Println("Error!", err.Error())
 		return
 	}
 
@@ -89,7 +89,7 @@ func (d *dumper) run(c *cmds.Command, args []string) {
 				panic(err)
 			}
 		}
-		csv := &view.Csv{filename, t}
+		csv := &view.Csv{FileName: filename, Data: t}
 		csv.Flush()
 	}
 }

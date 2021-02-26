@@ -7,6 +7,8 @@ package utils
 
 import "fmt"
 
+// GetUserConfirmation displays prompt and acquires user input
+// required for some commands.
 func GetUserConfirmation() bool {
 	if Debug.DryRun {
 		fmt.Println("This is a dry-run. No data will actually be modified on GitHub and only the " +

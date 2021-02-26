@@ -15,7 +15,9 @@ import (
 	"path"
 )
 
-func GitClone(url string, out string, name string) error {
+// GitClone clones a git from the given url into it's destination
+// at out/name.
+func GitClone(url, out, name string) error {
 	// assumes url and dest are valid
 	dest := path.Join(out, name)
 	cmd := exec.Command("git", "clone", url, dest)
@@ -32,6 +34,8 @@ func GitClone(url string, out string, name string) error {
 	return nil
 }
 
+// Url returns authentication url from a raw url string and
+// user credentials.
 func Url(rawurl, user, pass string) (string, error) {
 	u, err := url.Parse(rawurl)
 	if err != nil {
@@ -41,5 +45,6 @@ func Url(rawurl, user, pass string) (string, error) {
 	if user != "" && pass != "" {
 		u.User = url.UserPassword(user, pass)
 	}
+
 	return u.String(), nil
 }

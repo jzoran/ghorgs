@@ -19,11 +19,11 @@ import (
 // TarGz creates a tar.gz archive from a given path.
 // The archive uses `src` path to create a tar.gz at src + ".tar.gz",
 // e.g. /tmp/folder will have correspoding /tmp/folder.tar.gz
-// name paramter determines that the paths in archive are relative
+// name parameter determines that the paths in archive are relative
 // to name, e.g. /tmp/folder/file1.txt in the archive will have
 // path as "name/file1.txt" instead of absolute path "/tmp/folder/file1.txt".
-// This is usefull when unpacking the archive on an arbitrary
-// machine that doesn't necesserily have the /tmp/folder path.
+// This is useful when unpacking the archive on an arbitrary
+// machine that doesn't necessarily have the /tmp/folder path.
 func TarGz(name, src string) error {
 	dest := src + ".tar.gz"
 	f, err := os.Create(dest)
@@ -160,7 +160,6 @@ func TargzVerify(name, src string) error {
 				if err != nil {
 					return fmt.Errorf("Could not read symlink '%s' in archive '%s'. Error! %s",
 						h.Name, dest, err.Error())
-
 				}
 				if link != h.Linkname {
 					return fmt.Errorf("Incorrect symlink of '%s' in archive '%s'. Expected '%s',"+
@@ -180,8 +179,8 @@ func TargzVerify(name, src string) error {
 }
 
 func keysOf(m map[string]os.FileInfo) []string {
-	keys := make([]string, 0)
-	for key, _ := range m {
+	keys := make([]string, 0, len(m))
+	for key := range m {
 		keys = append(keys, key)
 	}
 	return keys

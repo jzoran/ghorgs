@@ -20,7 +20,7 @@ const (
 
 var (
 	teamsTableFields = &TeamsFields{
-		//&Field{"Id", -1}, // default for table as key for map of Records
+		// &Field{"Id", -1}, // default for table as key for map of Records
 		Name:         Field{"Name", 0},
 		Url:          Field{"Url", 1},
 		ParentId:     Field{"ParentId", 2},
@@ -60,9 +60,9 @@ func (f *TeamsFields) DisplayNames() []string {
 
 type Team struct {
 	Id          string       `json:"id"`
-	Name        *string      `json:"name",omitempty`
+	Name        *string      `json:"name,omitempty"`
 	Url         string       `json:"url"`
-	Parent      *TeamParent  `json:"parentTeam",omitempty`
+	Parent      *TeamParent  `json:"parentTeam,omitempty"`
 	Children    TeamChildren `json:"childTeams"`
 	Repos       TeamRepos    `json:"repositories"`
 	Members     TeamMembers  `json:"members"`
@@ -71,7 +71,7 @@ type Team struct {
 
 type TeamParent struct {
 	Id   string  `json:"id"`
-	Name *string `json:"name",omitempty`
+	Name *string `json:"name,omitempty"`
 }
 
 type TeamChildren struct {
@@ -155,7 +155,7 @@ func (r *TeamsResponse) GetNext() string {
 	return r.Data.Org.Teams.PageInfo.End
 }
 
-func (r *TeamsResponse) ToString() string {
+func (r *TeamsResponse) String() string {
 	s, err := json.Marshal(r)
 	if err != nil {
 		panic(err)

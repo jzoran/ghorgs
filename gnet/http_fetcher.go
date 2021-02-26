@@ -22,18 +22,21 @@ type Request struct {
 	Timeout time.Duration // in sec
 }
 
+// ResponseStatus holds the HTTP code and status resulting from an HTTP request.
 type ResponseStatus struct {
 	Code   int
 	Status string
 }
 
+// Execute runs a given http request and returns resulting response body in bytes
+// and  ResponseStatus (HTTP code and status).
 func (r *Request) Execute() ([]byte, *ResponseStatus) {
-	reqq := ""
+	requestQuery := ""
 	if r.Method == postMethod {
-		reqq = r.Query
+		requestQuery = r.Query
 	}
-	reqbody := strings.NewReader(reqq)
-	req, err := http.NewRequest(r.Method, r.Url, reqbody)
+	requestBody := strings.NewReader(requestQuery)
+	req, err := http.NewRequest(r.Method, r.Url, requestBody)
 	if err != nil {
 		panic(err)
 	}
@@ -46,22 +49,23 @@ func (r *Request) Execute() ([]byte, *ResponseStatus) {
 		Timeout: time.Second * r.Timeout,
 	}
 
-	resp, err := netClient.Do(req)
+	response, err := netClient.Do(req)
 	if err != nil {
 		panic(err)
 	}
-	defer resp.Body.Close()
+	defer response.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	responseStatus := &ResponseStatus{response.StatusCode, response.Status}
+	if responseStatus.Code != http.StatusOK {
 		if utils.Debug.Verbose {
 			log.Print(r.Query)
 		}
-		return nil, &ResponseStatus{resp.StatusCode, resp.Status}
+		return nil, responseStatus
 	}
 
-	bbody, err := ioutil.ReadAll(resp.Body)
+	bbody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		panic(err)
 	}
-	return bbody, &ResponseStatus{resp.StatusCode, resp.Status}
+	return bbody, responseStatus
 }

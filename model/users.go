@@ -21,7 +21,7 @@ const (
 
 var (
 	usersTableFields = &UsersFields{
-		//&Field{"Id", -1}, // default for table as key for map of Records
+		// &Field{"Id", -1}, // default for table as key for map of Records
 		Login:        Field{"Login", 0},
 		Name:         Field{"Name", 1},
 		Admin:        Field{"Admin", 2},
@@ -77,9 +77,9 @@ type UserRepos struct {
 type User struct {
 	Id        string    `json:"id"`
 	Login     string    `json:"login"`
-	Name      *string   `json:"name",omitempty`
-	Email     *string   `json:"email",omitempty`
-	Company   *string   `json:"company",omitempty`
+	Name      *string   `json:"name,omitempty"`
+	Email     *string   `json:"email,omitempty"`
+	Company   *string   `json:"company,omitempty"`
 	Url       string    `json:"url"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	Repos     UserRepos `json:"repositories"`
@@ -156,7 +156,7 @@ func (r *UsersResponse) GetNext() string {
 	return r.Data.Org.Members.PageInfo.End
 }
 
-func (r *UsersResponse) ToString() string {
+func (r *UsersResponse) String() string {
 	s, err := json.Marshal(r)
 	if err != nil {
 		panic(err)
@@ -194,7 +194,7 @@ func (r *UsersResponse) AppendTable(c *Table) {
 			email,
 			company,
 			user.Member.Url,
-			fmt.Sprintf("%s", user.Member.UpdatedAt),
+			user.Member.UpdatedAt.String(),
 			repos}
 	}
 }

@@ -6,7 +6,6 @@
 package model
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
@@ -29,16 +28,20 @@ type Entity interface {
 	HasNext() bool
 	GetNext() string
 
-	ToString() string
+	String() string
 }
 
 var (
-	EntityMap       map[string]Entity
-	EntityNamesList []string
-
-	Repos *ReposResponse
-	Users *UsersResponse
-	Teams *TeamsResponse
+	// EntityMap contains a map of:
+	//
+	//   key = entity name
+	//   value = struct implementing entity interface
+	//
+	// for all entities allowed to be used from interactive commands.
+	EntityMap map[string]Entity
+	Repos     *ReposResponse
+	Users     *UsersResponse
+	Teams     *TeamsResponse
 )
 
 func init() {
@@ -50,16 +53,19 @@ func init() {
 		Users.GetName(): Users,
 		Teams.GetName(): Teams,
 	}
-	EntityNamesList = keysOf(EntityMap)
 }
 
-// Check that a comma separated list of entities, e,
-// is correct and set ActiveEntities to requested
-// subset of entities.
-// In case of error return "Unknown entity" error,
-// otherwise nil.
+// EntityNamesList returns the list of names of entities
+// (use e.g. to dump the list)
+func EntityNamesList() []string {
+	return keysOf(EntityMap)
+}
+
+// ValidateEntities checks that a comma separated string of entities, e,
+// is correct and returns the list of Entity objects (and nil error).
+// In case of error returns empty Entity list and  "Unknown entity" error.
 func ValidateEntities(e string) ([]Entity, error) {
-	var activeEntities = make([]Entity, 0, len(EntityNamesList))
+	var activeEntities = make([]Entity, 0, len(EntityMap))
 	if e == "" || e == "all" {
 		for _, entity := range EntityMap {
 			activeEntities = append(activeEntities, entity)
@@ -69,7 +75,7 @@ func ValidateEntities(e string) ([]Entity, error) {
 		for _, s := range slices {
 			entity, ok := EntityMap[s]
 			if !ok {
-				return []Entity{}, errors.New(fmt.Sprintf("Unknown entity: %s\n", s))
+				return []Entity{}, fmt.Errorf("Unknown entity: %s\n", s)
 			}
 			activeEntities = append(activeEntities, entity)
 		}
@@ -78,8 +84,8 @@ func ValidateEntities(e string) ([]Entity, error) {
 	return activeEntities, nil
 }
 
-// Check that a given field exists in the list
-// of active entities ActiveEntities.
+// ValidateEntityField checks that a given field exists in the list of
+// activeEntities.
 func ValidateEntityField(field string, activeEntities []Entity) error {
 	if field == "" || field == ID.Name {
 		return nil
@@ -87,10 +93,10 @@ func ValidateEntityField(field string, activeEntities []Entity) error {
 
 	for _, entity := range activeEntities {
 		if !entity.HasField(field) {
-			return errors.New(fmt.Sprintf("Field `%s` not found in `%s`. Choose one of: %s.\n",
+			return fmt.Errorf("Field `%s` not found in `%s`. Choose one of: %s.\n",
 				field,
 				entity.GetName(),
-				strings.Join(entity.GetFields().DisplayNames(), ", ")))
+				strings.Join(entity.GetFields().DisplayNames(), ", "))
 		}
 	}
 
@@ -99,7 +105,7 @@ func ValidateEntityField(field string, activeEntities []Entity) error {
 
 func keysOf(m map[string]Entity) []string {
 	keys := make([]string, 0, len(m))
-	for key, _ := range m {
+	for key := range m {
 		keys = append(keys, key)
 	}
 	return keys

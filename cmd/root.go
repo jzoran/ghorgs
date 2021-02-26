@@ -35,19 +35,19 @@ func init() {
 		"d",
 		false,
 		"Perform a dry run of the command without actually executing it in the end.")
-	flags.BindPFlag("dry-run", rootCmd.PersistentFlags().Lookup("dry-run"))
+	flags.BindPFlag("dry-run", rootCmd.PersistentFlags().Lookup("dry-run")) // nolint
 
 	rootCmd.PersistentFlags().BoolP("verbose",
 		"v",
 		false,
 		"Toggle debug printouts.")
-	flags.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
+	flags.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose")) // nolint
 
 	rootCmd.PersistentFlags().StringP("user",
 		"u",
 		"",
 		"User name of the owner of token. (Needed with 'git clone'.)")
-	flags.BindPFlag("user", rootCmd.PersistentFlags().Lookup("user"))
+	flags.BindPFlag("user", rootCmd.PersistentFlags().Lookup("user")) // nolint
 
 	rootCmd.PersistentFlags().StringP("token",
 		"t",
@@ -66,33 +66,33 @@ func init() {
 			"    - read:gpg_key.\n"+
 			" Individual commands don't require all the scopes, so different tokens can be "+
 			" used in the command line for different commands.")
-	flags.BindPFlag("token", rootCmd.PersistentFlags().Lookup("token"))
+	flags.BindPFlag("token", rootCmd.PersistentFlags().Lookup("token")) // nolint
 
 	rootCmd.PersistentFlags().StringP("organization",
 		"o",
 		"",
 		"Organizational account on GitHub analyzed.")
 
-	flags.BindPFlag("organization", rootCmd.PersistentFlags().Lookup("organization"))
+	flags.BindPFlag("organization", rootCmd.PersistentFlags().Lookup("organization")) // nolint
 }
 
 func initConfig() {
-	flags.SetConfigName("config")
-	flags.SetConfigType("yaml")
-	flags.AddConfigPath("./config")
+	flags.AddConfigPath(gnet.ConfigPath)
+	flags.SetConfigName(gnet.ConfigName)
+	flags.SetConfigType(gnet.ConfigType)
 
 	if err := flags.ReadInConfig(); err != nil {
 		if _, ok := err.(flags.ConfigFileNotFoundError); ok {
 			// ignore, issue warning
 			fmt.Printf("Warning: config file not found.")
-		} else {
-			panic(fmt.Errorf("Fatal config error: %s", err))
+			return
 		}
-	} else {
-		err = flags.Unmarshal(&gnet.Conf)
-		if err != nil {
-			panic(fmt.Errorf("Fatal config error: %s", err))
-		}
+
+		panic(fmt.Errorf("Fatal config error: %s", err))
+	}
+
+	if err := flags.Unmarshal(&gnet.Conf); err != nil {
+		panic(fmt.Errorf("Fatal config error: %s", err))
 	}
 }
 
