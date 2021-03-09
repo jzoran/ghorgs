@@ -50,7 +50,7 @@ Current dependencies are to `cobra` (https://github.com/spf13/cobra) and
 `viper` (https://github.com/spf13/viper).
 Make sure you run:
 `go get github.com/spf13/cobra` and `go get github.com/spf13/viper`
-respectively to get the dependcies.
+respectively to get the dependencies.
 Also, upon modification of module, re-init the module
 with `go mod init`, which will recreate the go.mod and go.sum files.
 
