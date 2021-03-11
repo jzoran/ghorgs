@@ -10,7 +10,7 @@ import (
 	cmds "github.com/spf13/cobra"
 )
 
-const version = "1.5.1"
+const version = "1.5.2"
 
 var versionCmd = &cmds.Command{
 	Use:   "version",
