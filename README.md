@@ -10,9 +10,7 @@ It uses GitHub's REST-like API (v3) to delete repositories and remove users.
 
 ## Set up
 * The project is written in go, so you have to set up go environment.
-* The bare minimum is to have the latest installation of go for your environment and
-  set GOPATH to the root of your go projects and GOBIN to the path where you want
-  the executables to end up after `go install`.
+* The bare minimum is to have the latest installation of go for your environment.
 
 ### config
 
@@ -53,6 +51,10 @@ Make sure you run:
 respectively to get the dependencies.
 Also, upon modification of module, re-init the module
 with `go mod init`, which will recreate the go.mod and go.sum files.
+
+### Development
+* `cp pre-commit .git/hooks` to set up pre-commit hook. Make sure to have `golangci-lint` installed.
+  See https://golangci-lint.run/ .
 
 ## Build
 `go install`
