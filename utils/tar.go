@@ -145,6 +145,12 @@ func TargzVerify(name, src string) error {
 				dest, err.Error())
 		}
 
+		// Validate that the file path does not contain ".."
+		if strings.Contains(h.Name, "..") {
+			return fmt.Errorf("Invalid file path '%s' in archive '%s'. Path traversal detected.",
+				h.Name, dest)
+		}
+
 		fi, ok := fimap[h.Name]
 		if ok {
 			if fi.Mode().IsRegular() && fi.Size() != h.Size {
